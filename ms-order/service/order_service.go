@@ -22,7 +22,31 @@ func NewOrderService(col *mongo.Collection, cli *mongo.Client) *Order {
 }
 
 func (o *Order) CreateOrder(ctx context.Context, req *pb.CreateOrderRequest) (*pb.Order, error) {
-	return &pb.Order{}, nil
+	products := []*pb.Product{
+		{
+			Id:    "1",
+			Name:  "Product 1",
+			Price: 1000,
+		},
+		{
+			Id:    "2",
+			Name:  "Product 2",
+			Price: 1000,
+		},
+		{
+			Id:    "3",
+			Name:  "Product 3",
+			Price: 1000,
+		},
+	}
+
+	return &pb.Order{
+		Id:          "1",
+		Type:        "Type 1",
+		CustomerId:  1,
+		Product:     products,
+		TotalAmount: 3000,
+	}, nil
 }
 
 func (o *Order) GetOrder(ctx context.Context, req *pb.GetOrderRequest) (*pb.Order, error) {
