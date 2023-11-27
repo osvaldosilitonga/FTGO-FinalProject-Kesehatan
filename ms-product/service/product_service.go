@@ -19,11 +19,13 @@ type Product struct {
 	product *pb.Product
 	pb.UnimplementedProductServiceServer
 	dbCollection *mongo.Collection
+	dbClient     *mongo.Client
 }
 
-func NewProductService(col *mongo.Collection) *Product {
+func NewProductService(col *mongo.Collection, cli *mongo.Client) *Product {
 	return &Product{
 		dbCollection: col,
+		dbClient:     cli,
 	}
 }
 
@@ -77,7 +79,46 @@ func (p *Product) GetProduct(ctx context.Context, req *pb.GetProductRequest) (*p
 }
 
 func (p *Product) UpdateProduct(ctx context.Context, req *pb.UpdateProductRequest) (*pb.Product, error) {
-	return &pb.Product{}, nil
+	id, err := primitive.ObjectIDFromHex(req.Id)
+	if err != nil {
+		return nil, status.Error(codes.InvalidArgument, err.Error())
+	}
+
+	now := time.Now().UnixMilli()
+	product := &entity.Products{
+		UpdatedAt: strconv.Itoa(int(now)),
+	}
+
+	if req.Name != "" {
+		product.Name = req.Name
+	}
+	if req.Description != "" {
+		product.Description = req.Description
+	}
+	if req.Category != "" {
+		product.Category = req.Category
+	}
+	if req.Price >= 1000 {
+		product.Price = req.Price
+	}
+	if req.Stock >= 1 {
+		product.Stock = req.Stock
+	}
+
+	result := p.dbCollection.FindOneAndUpdate(ctx, bson.M{"_id": id}, bson.M{"$set": product})
+	if result.Err() == mongo.ErrNoDocuments {
+		return nil, status.Error(codes.NotFound, "product not found")
+	}
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	err = p.dbCollection.FindOne(ctx, bson.M{"_id": id}).Decode(&product)
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	return helper.ToProductResponse(product), nil
 }
 
 func (p *Product) DeleteProduct(ctx context.Context, req *pb.DeleteProductRequest) (*pb.Product, error) {

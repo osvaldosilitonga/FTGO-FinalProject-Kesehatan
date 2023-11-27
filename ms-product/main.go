@@ -27,9 +27,10 @@ func main() {
 	}
 
 	dbClient := configs.InitDB()
+	defer dbClient.Disconnect(nil)
 	dbCollection := configs.DBCollection("products", dbClient)
 
-	productService := service.NewProductService(dbCollection)
+	productService := service.NewProductService(dbCollection, dbClient)
 
 	var opts []grpc.ServerOption
 	grpcServer := grpc.NewServer(opts...)
