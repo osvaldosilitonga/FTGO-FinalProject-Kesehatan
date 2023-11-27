@@ -8,6 +8,7 @@ import (
 	"strconv"
 	"time"
 
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"google.golang.org/grpc/codes"
@@ -57,7 +58,22 @@ func (p *Product) CreateProduct(ctx context.Context, req *pb.CreateProductReques
 }
 
 func (p *Product) GetProduct(ctx context.Context, req *pb.GetProductRequest) (*pb.Product, error) {
-	return &pb.Product{}, nil
+	id, err := primitive.ObjectIDFromHex(req.Id)
+	if err != nil {
+		return nil, status.Error(codes.InvalidArgument, err.Error())
+	}
+
+	product := &entity.Products{}
+	filter := bson.M{"_id": id}
+	err = p.dbCollection.FindOne(ctx, filter).Decode(&product)
+	if err == mongo.ErrNoDocuments {
+		return nil, status.Error(codes.NotFound, "product not found")
+	}
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	return helper.ToProductResponse(product), nil
 }
 
 func (p *Product) UpdateProduct(ctx context.Context, req *pb.UpdateProductRequest) (*pb.Product, error) {
