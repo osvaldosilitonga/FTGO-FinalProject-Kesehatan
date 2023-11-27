@@ -1,0 +1,25 @@
+package models
+
+import (
+	"time"
+
+	"go.mongodb.org/mongo-driver/bson/primitive"
+)
+
+type Order struct {
+	ID          primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
+	Type        string             `json:"type" bson:"type"`
+	CustomerID  primitive.ObjectID `json:"customer_id" bson:"customer_id,omitempty"`
+	Product     []Product          `json:"product,omitempty" bson:"product,omitempty"`
+	TotalAmount float64            `json:"total_amount" bson:"total_amount"`
+	CreatedAt   time.Time          `json:"created_at" bson:"created_at"`
+	UpdatedAt   time.Time          `json:"updated_at" bson:"updated_at"`
+}
+
+type Product struct {
+	Id          string `json:"id,omitempty" bson:"_id,omitempty"`
+	Name        string `json:"name,omitempty" bson:"name,omitempty"`
+	Description string `json:"description,omitempty" bson:"description,omitempty"`
+	Price       int64  `json:"price,omitempty" bson:"price,omitempty"`
+	Quantity    int    `json:"qty,omitempty" bson:"qty,omitempty"`
+}
