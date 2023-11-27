@@ -199,5 +199,23 @@ func (p *Product) CheckStock(ctx context.Context, req *pb.CheckStockRequest) (*e
 }
 
 func (p *Product) CheckProductExist(ctx context.Context, req *pb.CheckProductExistRequest) (*emptypb.Empty, error) {
+
+	for _, product := range req.Datas {
+		id, err := primitive.ObjectIDFromHex(product)
+		if err != nil {
+			return nil, status.Error(codes.InvalidArgument, err.Error())
+		}
+
+		filter := bson.M{"_id": id}
+		err = p.dbCollection.FindOne(ctx, filter).Err()
+		if err == mongo.ErrNoDocuments {
+			return nil, status.Error(codes.NotFound, fmt.Sprintf("product with id: %s, not found", product))
+		}
+		if err != nil {
+			return nil, status.Error(codes.Internal, err.Error())
+		}
+
+	}
+
 	return new(emptypb.Empty), nil
 }
