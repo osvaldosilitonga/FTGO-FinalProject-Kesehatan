@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"fmt"
 	"product/entity"
 	"product/helper"
 	pb "product/internal/product"
@@ -13,6 +14,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 type Product struct {
@@ -167,4 +169,35 @@ func (p *Product) ListProduct(ctx context.Context, req *pb.Empty) (*pb.ListProdu
 	}
 
 	return productsResponse, nil
+}
+
+func (p *Product) CheckStock(ctx context.Context, req *pb.CheckStockRequest) (*emptypb.Empty, error) {
+
+	for _, product := range req.Datas {
+		id, err := primitive.ObjectIDFromHex(product.Id)
+		if err != nil {
+			return nil, status.Error(codes.InvalidArgument, err.Error())
+		}
+
+		data := &entity.Products{}
+
+		filter := bson.M{"_id": id}
+		err = p.dbCollection.FindOne(ctx, filter).Decode(&data)
+		if err == mongo.ErrNoDocuments {
+			return nil, status.Error(codes.NotFound, fmt.Sprintf("product with id: %s, not found", product.Id))
+		}
+		if err != nil {
+			return nil, status.Error(codes.Internal, err.Error())
+		}
+
+		if data.Stock < product.Quantity {
+			return nil, status.Error(codes.InvalidArgument, fmt.Sprintf("product with id: %s, out of stock", product.Id))
+		}
+	}
+
+	return new(emptypb.Empty), nil
+}
+
+func (p *Product) CheckProductExist(ctx context.Context, req *pb.CheckProductExistRequest) (*emptypb.Empty, error) {
+	return new(emptypb.Empty), nil
 }

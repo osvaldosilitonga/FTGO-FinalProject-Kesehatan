@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net"
+	"os"
 	"product/configs"
 	"product/service"
 
@@ -20,7 +21,7 @@ func init() {
 }
 
 func main() {
-	port := "50051"
+	port := os.Getenv("MS_PRODUCT_SERVICE_PORT")
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", port))
 	if err != nil {
 		log.Fatalf("Failed to listen: %v", err)

@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package product;
 
+import "google/protobuf/empty.proto";
+
 option go_package = "internal/product";
 
 service ProductService {
@@ -10,6 +12,8 @@ service ProductService {
     rpc UpdateProduct(UpdateProductRequest) returns (Product);
     rpc DeleteProduct(DeleteProductRequest) returns (Product);
     rpc ListProduct(Empty) returns (ListProductResponse);
+    rpc CheckStock(CheckStockRequest) returns (google.protobuf.Empty);
+    rpc CheckProductExist(CheckProductExistRequest) returns (google.protobuf.Empty);
 }
 
 message Empty {}
@@ -23,6 +27,11 @@ message Product {
     int32 stock = 6;
     string createdAt = 7;
     string updatedAt = 8;
+}
+
+message Data {
+  string id = 1;
+  int32 quantity = 2;
 }
 
 // Request
@@ -49,6 +58,14 @@ message UpdateProductRequest {
 
 message DeleteProductRequest {
     string id = 1;
+}
+
+message CheckStockRequest {
+    repeated Data datas = 1;
+}
+
+message CheckProductExistRequest {
+    repeated string id = 1;
 }
 
 // Response
