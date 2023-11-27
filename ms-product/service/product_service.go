@@ -122,9 +122,49 @@ func (p *Product) UpdateProduct(ctx context.Context, req *pb.UpdateProductReques
 }
 
 func (p *Product) DeleteProduct(ctx context.Context, req *pb.DeleteProductRequest) (*pb.Product, error) {
-	return &pb.Product{}, nil
+	id, err := primitive.ObjectIDFromHex(req.Id)
+	if err != nil {
+		return nil, status.Error(codes.InvalidArgument, err.Error())
+	}
+
+	product := &entity.Products{}
+	err = p.dbCollection.FindOneAndDelete(ctx, bson.M{"_id": id}).Decode(&product)
+	if err == mongo.ErrNoDocuments {
+		return nil, status.Error(codes.NotFound, "product not found")
+	}
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	return helper.ToProductResponse(product), nil
 }
 
 func (p *Product) ListProduct(ctx context.Context, req *pb.Empty) (*pb.ListProductResponse, error) {
-	return &pb.ListProductResponse{}, nil
+
+	products := []entity.Products{}
+	cursor, err := p.dbCollection.Find(ctx, bson.M{})
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+	defer cursor.Close(ctx)
+
+	for cursor.Next(ctx) {
+		product := entity.Products{}
+		if err := cursor.Decode(&product); err != nil {
+			return nil, status.Error(codes.Internal, err.Error())
+		}
+		products = append(products, product)
+	}
+
+	pr := []*pb.Product{}
+	for _, product := range products {
+		p := helper.ToProductResponse(&product)
+		pr = append(pr, p)
+	}
+
+	productsResponse := &pb.ListProductResponse{
+		Products: pr,
+	}
+
+	return productsResponse, nil
 }
