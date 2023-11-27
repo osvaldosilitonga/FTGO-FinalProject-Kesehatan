@@ -12,8 +12,8 @@ type Order struct {
 	CustomerID  primitive.ObjectID `json:"customer_id" bson:"customer_id,omitempty"`
 	Product     []Product          `json:"product,omitempty" bson:"product,omitempty"`
 	TotalAmount float64            `json:"total_amount" bson:"total_amount"`
-	CreatedAt   time.Time          `json:"created_at" bson:"created_at"`
-	UpdatedAt   time.Time          `json:"updated_at" bson:"updated_at"`
+	CreatedAt   string             `json:"created_at,omitempty" bson:"created_at,omitempty"`
+	UpdatedAt   string             `json:"updated_at,omitempty" bson:"updated_at,omitempty"`
 }
 
 type Product struct {
