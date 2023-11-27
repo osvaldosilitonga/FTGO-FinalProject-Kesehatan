@@ -1,7 +1,8 @@
-package config
+package configs
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"os"
 	"time"
@@ -12,7 +13,7 @@ import (
 )
 
 func DBCollection(col string, client *mongo.Client) *mongo.Collection {
-	return client.Database("orders").Collection(col)
+	return client.Database("final-project").Collection(col)
 }
 
 func InitDB() *mongo.Client {
@@ -29,7 +30,7 @@ func InitDB() *mongo.Client {
 		log.Fatal(err)
 	}
 
-	log.Println("Mongo DB connected Successfully")
+	fmt.Println("Mongo DB connected Successfully")
 
 	return client
 }
