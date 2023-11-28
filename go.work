@@ -2,4 +2,5 @@ go 1.21.1
 
 use ./ms-product
 use ./api-gateway
+use ./ms-user
 
