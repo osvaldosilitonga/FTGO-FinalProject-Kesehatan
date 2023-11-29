@@ -12,7 +12,7 @@ import (
 )
 
 func DBCollection(col string, client *mongo.Client) *mongo.Collection {
-	return client.Database("orders").Collection(col)
+	return client.Database("final-project").Collection(col)
 }
 
 func InitDB() *mongo.Client {
