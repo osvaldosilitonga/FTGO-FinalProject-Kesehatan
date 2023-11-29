@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"product/entity"
 	"product/helper"
@@ -145,6 +146,9 @@ func (p *Product) ListProduct(ctx context.Context, req *pb.Empty) (*pb.ListProdu
 
 	products := []entity.Products{}
 	cursor, err := p.dbCollection.Find(ctx, bson.M{})
+	if errors.Is(err, mongo.ErrNoDocuments) {
+		return nil, status.Error(codes.NotFound, fmt.Sprintf("product not found"))
+	}
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
