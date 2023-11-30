@@ -21,6 +21,9 @@ func Router(r *echo.Echo) {
 	product := v1.Group("/products")
 	{
 		product.GET("", productController.ListProduct)
+		product.GET("/:id", productController.FindByID)
+
+		// Admin Only
 		product.POST("", productController.CreateProduct)
 	}
 

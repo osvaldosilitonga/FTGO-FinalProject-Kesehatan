@@ -21,7 +21,7 @@ func init() {
 }
 
 func main() {
-	port := os.Getenv("MS_PRODUCT_SERVICE_PORT")
+	port := os.Getenv("PRODUCT_SERVICE_PORT")
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", port))
 	if err != nil {
 		log.Fatalf("Failed to listen: %v", err)

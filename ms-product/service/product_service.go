@@ -65,7 +65,7 @@ func (p *Product) CreateProduct(ctx context.Context, req *pb.CreateProductReques
 func (p *Product) GetProduct(ctx context.Context, req *pb.GetProductRequest) (*pb.Product, error) {
 	id, err := primitive.ObjectIDFromHex(req.Id)
 	if err != nil {
-		return nil, status.Error(codes.InvalidArgument, err.Error())
+		return nil, status.Error(codes.InvalidArgument, "invalid product id")
 	}
 
 	product := &entity.Products{}

@@ -1,8 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"gateway/initializers"
 	"gateway/router"
+	"os"
 
 	"github.com/go-playground/validator"
 	"github.com/labstack/echo/v4"
@@ -22,5 +24,6 @@ func main() {
 
 	router.Router(e)
 
-	e.Logger.Fatal(e.Start(":8080"))
+	gatewayPort := os.Getenv("GATEWAY_PORT")
+	e.Logger.Fatal(e.Start(fmt.Sprintf(":%s", gatewayPort)))
 }
