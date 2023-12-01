@@ -13,6 +13,6 @@ func HttpCodeError(c echo.Context, code int, message string) error {
 	case 404:
 		return ErrorMessage(c, &ApiNotFound, message)
 	default:
-		return ErrorMessage(c, &ApiInternalServer, nil)
+		return ErrorMessage(c, &ApiInternalServer, message)
 	}
 }

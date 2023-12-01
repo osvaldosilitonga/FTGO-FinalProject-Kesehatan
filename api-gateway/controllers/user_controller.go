@@ -16,6 +16,7 @@ import (
 
 type User interface {
 	Login(c echo.Context) error
+	Register(c echo.Context) error
 }
 
 type UserImpl struct {
@@ -69,6 +70,33 @@ func (u *UserImpl) Login(c echo.Context) error {
 
 	response := web.LoginResponse{
 		Token: resp.Token,
+	}
+	return utils.SuccessMessage(c, &utils.ApiOk, response)
+}
+
+func (u *UserImpl) Register(c echo.Context) error {
+	req := web.UsersRegisterRequest{}
+	if err := c.Bind(&req); err != nil {
+		return utils.ErrorMessage(c, &utils.ApiBadRequest, err.Error())
+	}
+	if err := c.Validate(&req); err != nil {
+		return utils.ErrorMessage(c, &utils.ApiBadRequest, err.Error())
+	}
+
+	// make request to user service
+	resp, code, err := u.UserService.Register(&req)
+	if err != nil {
+		return utils.ErrorMessage(c, &utils.ApiInternalServer, err.Error())
+	}
+	if code != 201 {
+		return utils.HttpCodeError(c, code, resp.Message)
+	}
+
+	response := web.RegisterResponse{
+		ID:        resp.User.ID,
+		Name:      resp.User.Name,
+		Email:     resp.User.Email,
+		CreatedAt: resp.User.CreatedAt,
 	}
 	return utils.SuccessMessage(c, &utils.ApiOk, response)
 }
