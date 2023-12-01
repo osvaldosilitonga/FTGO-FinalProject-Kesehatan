@@ -34,6 +34,7 @@ func Router(r *echo.Echo) {
 	user := v1.Group("/user")
 	{
 		user.POST("/login", userController.Login)
+		user.POST("/register", userController.Register)
 	}
 
 }
