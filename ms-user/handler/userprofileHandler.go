@@ -63,3 +63,19 @@ func UpdateUserProfile(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, map[string]interface{}{"message": "User profile updated successfully", "user_profile": userProfile})
 }
+
+func GetUserByID(c echo.Context) error {
+	userID := c.Param("id")
+
+	var user entity.User
+	if err := config.DB.First(&user, userID).Error; err != nil {
+		return c.JSON(http.StatusNotFound, map[string]interface{}{"message": "User not found"})
+	}
+
+	var userProfile entity.UserProfile
+	if err := config.DB.Where("user_id = ?", userID).First(&userProfile).Error; err != nil {
+		return c.JSON(http.StatusNotFound, map[string]interface{}{"message": "UserProfile not found"})
+	}
+
+	return c.JSON(http.StatusOK, map[string]interface{}{"user": user, "userProfile": userProfile})
+}

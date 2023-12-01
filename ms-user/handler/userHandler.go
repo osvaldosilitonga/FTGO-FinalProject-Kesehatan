@@ -13,7 +13,7 @@ import (
 )
 
 func RegisterUser(c echo.Context) error {
-	input := dto.UserLoginRequest{}
+	input := dto.UserRegisterRequest{}
 	if err := c.Bind(&input); err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]interface{}{"message": "Invalid request data"})
 	}
@@ -59,15 +59,12 @@ func RegisterUser(c echo.Context) error {
 }
 
 func RegisterAdmin(c echo.Context) error {
-	input := new(struct {
-		entity.User
-		Address   string `json:"address"`
-		Phone     string `json:"phone"`
-		Birthdate string `json:"birthdate"`
-		Gender    string `json:"gender"`
-	})
-	if err := c.Bind(input); err != nil {
+	input := dto.UserRegisterRequest{}
+	if err := c.Bind(&input); err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]interface{}{"message": "Invalid request data"})
+	}
+	if err := c.Validate(&input); err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]interface{}{"message": err.Error()})
 	}
 
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(input.Password), bcrypt.DefaultCost)
@@ -108,7 +105,6 @@ func RegisterAdmin(c echo.Context) error {
 }
 
 func LoginUser(c echo.Context) error {
-
 	input := new(entity.User)
 	if err := c.Bind(input); err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]interface{}{"message": "Invalid request data"})
