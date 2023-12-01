@@ -17,6 +17,10 @@ type Product interface {
 	ListProduct(ctx context.Context) (*pb.ListProductResponse, error)
 	CreateProduct(ctx context.Context, req *pb.CreateProductRequest) (*pb.Product, error)
 	GetProduct(ctx context.Context, req *pb.GetProductRequest) (*pb.Product, error)
+	UpdateProduct(ctx context.Context, req *pb.UpdateProductRequest) (*pb.Product, error)
+	DeleteProduct(ctx context.Context, req *pb.DeleteProductRequest) (*pb.Product, error)
+	CheckStock(ctx context.Context, req *pb.CheckStockRequest) (*emptypb.Empty, error)
+	CheckProductExist(ctx context.Context, req *pb.CheckProductExistRequest) (*emptypb.Empty, error)
 }
 
 type ProductImpl struct {

@@ -29,6 +29,8 @@ func Router(r *echo.Echo) {
 
 		// Admin Only
 		product.POST("", productController.CreateProduct)
+		product.PUT("/:id", productController.UpdateProduct)
+		product.DELETE("/:id", productController.DeleteProduct)
 	}
 
 	user := v1.Group("/user")

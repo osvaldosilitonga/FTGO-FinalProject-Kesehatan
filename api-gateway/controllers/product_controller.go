@@ -73,3 +73,46 @@ func (p *ProductImpl) FindByID(c echo.Context) error {
 
 	return utils.SuccessMessage(c, &utils.ApiOk, res)
 }
+
+func (p *ProductImpl) UpdateProduct(c echo.Context) error {
+	id := c.Param("id")
+
+	req := &web.UpdateProductRequest{}
+	if err := c.Bind(req); err != nil {
+		return utils.ErrorMessage(c, &utils.ApiBadRequest, err)
+	}
+	if err := c.Validate(req); err != nil {
+		return utils.ErrorMessage(c, &utils.ApiBadRequest, err)
+	}
+
+	update := &pb.UpdateProductRequest{
+		Id:          id,
+		Name:        req.Name,
+		Description: req.Description,
+		Category:    req.Category,
+		Price:       req.Price,
+		Stock:       req.Stock,
+	}
+
+	res, err := p.ProductService.UpdateProduct(c.Request().Context(), update)
+	if err != nil {
+		return utils.GrpcError(c, err)
+	}
+
+	return utils.SuccessMessage(c, &utils.ApiOk, res)
+}
+
+func (p *ProductImpl) DeleteProduct(c echo.Context) error {
+	id := c.Param("id")
+
+	req := &pb.DeleteProductRequest{
+		Id: id,
+	}
+
+	res, err := p.ProductService.DeleteProduct(c.Request().Context(), req)
+	if err != nil {
+		return utils.GrpcError(c, err)
+	}
+
+	return utils.SuccessMessage(c, &utils.ApiOk, res)
+}
