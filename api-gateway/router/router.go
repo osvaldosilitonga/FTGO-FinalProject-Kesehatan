@@ -12,11 +12,13 @@ import (
 func Router(r *echo.Echo) {
 	productGrpc := configs.ProductGrpc(os.Getenv("PRODUCT_GRPC_SERVER"))
 
+	redisClient := configs.InitRedis()
+
 	productService := service.NewProductService(productGrpc)
 	userService := service.NewUserService()
 
 	productController := controllers.NewProductController(productService)
-	userController := controllers.NewUserController(userService)
+	userController := controllers.NewUserController(userService, redisClient)
 
 	v1 := r.Group("/api/v1")
 

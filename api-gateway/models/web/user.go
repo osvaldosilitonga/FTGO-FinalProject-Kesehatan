@@ -1,7 +1,5 @@
 package web
 
-import "time"
-
 // Request
 type UsersLoginRequest struct {
 	Email    string `json:"email" validate:"required,email"`
@@ -9,11 +7,14 @@ type UsersLoginRequest struct {
 }
 
 // Response
-type UserLoginResponse struct {
-	ID        int       `json:"id"`
-	Name      string    `json:"name"`
-	Email     string    `json:"email"`
-	Role      string    `json:"role"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+type LoginResponse struct {
+	Token string `json:"token"`
+}
+
+// HttpUserLogin is a struct to response login body from user service
+type HttpUserLogin struct {
+	ID      int    `json:"id"`
+	Role    string `json:"role"`
+	Token   string `json:"token"`
+	Message string `json:"message"`
 }

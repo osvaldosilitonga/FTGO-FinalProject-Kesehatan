@@ -1,12 +1,17 @@
 package controllers
 
 import (
+	"context"
+	"encoding/json"
+	"gateway/models/entity"
 	"gateway/models/web"
 	"gateway/service"
 	"gateway/utils"
-	"net/http"
+	"log"
+	"time"
 
 	"github.com/labstack/echo/v4"
+	"github.com/redis/go-redis/v9"
 )
 
 type User interface {
@@ -15,31 +20,55 @@ type User interface {
 
 type UserImpl struct {
 	UserService service.User
+	RedisClient *redis.Client
 }
 
-func NewUserController(us service.User) *UserImpl {
+func NewUserController(us service.User, rc *redis.Client) *UserImpl {
 	return &UserImpl{
 		UserService: us,
+		RedisClient: rc,
 	}
 }
 
 func (u *UserImpl) Login(c echo.Context) error {
-	req := &web.UsersLoginRequest{}
+	req := web.UsersLoginRequest{}
 	if err := c.Bind(&req); err != nil {
-		return utils.ErrorMessage(c, &utils.ApiBadRequest, "invalid request body")
+		return utils.ErrorMessage(c, &utils.ApiBadRequest, "bind error")
 	}
 	if err := c.Validate(&req); err != nil {
-		return utils.ErrorMessage(c, &utils.ApiBadRequest, "invalid request body")
+		return utils.ErrorMessage(c, &utils.ApiBadRequest, err.Error())
 	}
 
-	err := u.UserService.Login(req)
+	// make request to user service
+	resp, code, err := u.UserService.Login(&req)
 	if err != nil {
-		return utils.ErrorMessage(c, &utils.ApiInternalServer, echo.Map{
-			"msg": "error from user login service",
-		})
+		return utils.ErrorMessage(c, &utils.ApiInternalServer, err.Error())
+	}
+	if code != 200 {
+		return utils.HttpCodeError(c, code, resp.Message)
 	}
 
-	return c.JSON(http.StatusOK, echo.Map{
-		"msg": "OK",
-	})
+	authData := entity.AuthUser{
+		ID:   resp.ID,
+		Role: resp.Role,
+	}
+
+	data, err := json.Marshal(authData)
+	if err != nil {
+		log.Println("error marshal data: ", err.Error())
+	} else {
+		// set data to redis
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+
+		err = u.RedisClient.Set(ctx, resp.Token, data, time.Duration(24)*time.Hour).Err()
+		if err != nil {
+			log.Println("error set data to redis: ", err.Error())
+		}
+	}
+
+	response := web.LoginResponse{
+		Token: resp.Token,
+	}
+	return utils.SuccessMessage(c, &utils.ApiOk, response)
 }

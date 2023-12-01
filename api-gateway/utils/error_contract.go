@@ -22,6 +22,11 @@ var (
 		Code:   http.StatusInternalServerError,
 		Status: "internal server error",
 	}
+
+	ApiUnauthorized = web.ErrWebResponse{
+		Code:   http.StatusUnauthorized,
+		Status: "unauthorized",
+	}
 )
 
 func ErrorMessage(c echo.Context, apiErr *web.ErrWebResponse, detail any) error {
