@@ -25,5 +25,6 @@ func RegisterRoutes(e *echo.Echo) {
 	admin.Use(middleware.RequireAuth)
 	{
 		admin.GET("/:id/activities", handler.GetActivitiesByUserID)
+		admin.GET("/:id", handler.GetAllUserDataByID)
 	}
 }

@@ -13,13 +13,6 @@ import (
 )
 
 func RegisterUser(c echo.Context) error {
-	// input := new(struct {
-	// 	entity.User
-	// 	Address   string `json:"address"`
-	// 	Phone     string `json:"phone"`
-	// 	Birthdate string `json:"birthdate"`
-	// 	Gender    string `json:"gender"`
-	// })
 	input := dto.UserLoginRequest{}
 	if err := c.Bind(&input); err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]interface{}{"message": "Invalid request data"})
