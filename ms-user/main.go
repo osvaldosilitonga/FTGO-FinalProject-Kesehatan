@@ -3,9 +3,11 @@ package main
 import (
 	"log"
 	"miniproject/config"
+	"miniproject/initializers"
 	"miniproject/routes"
 	"os"
 
+	"github.com/go-playground/validator"
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -23,6 +25,7 @@ func main() {
 	// Middlewares
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
+	e.Validator = &initializers.CustomValidator{Validator: validator.New()}
 
 	// Database initialization
 	config.InitDB()

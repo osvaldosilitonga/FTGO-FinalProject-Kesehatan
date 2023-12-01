@@ -17,6 +17,9 @@ func RegisterUser(c echo.Context) error {
 	if err := c.Bind(&input); err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]interface{}{"message": "Invalid request data"})
 	}
+	if err := c.Validate(&input); err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]interface{}{"message": err.Error()})
+	}
 
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(input.Password), bcrypt.DefaultCost)
 	if err != nil {
