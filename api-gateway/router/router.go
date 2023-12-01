@@ -13,8 +13,10 @@ func Router(r *echo.Echo) {
 	productGrpc := configs.ProductGrpc(os.Getenv("PRODUCT_GRPC_SERVER"))
 
 	productService := service.NewProductService(productGrpc)
+	userService := service.NewUserService()
 
 	productController := controllers.NewProductController(productService)
+	userController := controllers.NewUserController(userService)
 
 	v1 := r.Group("/api/v1")
 
@@ -25,6 +27,11 @@ func Router(r *echo.Echo) {
 
 		// Admin Only
 		product.POST("", productController.CreateProduct)
+	}
+
+	user := v1.Group("/user")
+	{
+		user.POST("/login", userController.Login)
 	}
 
 }
