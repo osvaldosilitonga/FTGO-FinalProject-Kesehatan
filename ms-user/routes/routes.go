@@ -10,6 +10,7 @@ import (
 func RegisterRoutes(e *echo.Echo) {
 
 	e.POST("/register", handler.RegisterUser)
+	e.POST("/register/admin", handler.RegisterAdmin)
 	e.POST("/login", handler.LoginUser)
 
 	user := e.Group("/user")
@@ -20,5 +21,9 @@ func RegisterRoutes(e *echo.Echo) {
 		user.GET("/activities", handler.GetUserActivities)
 	}
 
-	e.GET("/admin/:id/activities", handler.GetActivitiesByUserID, middleware.AdminOnlyMiddleware)
+	admin := e.Group("/admin")
+	admin.Use(middleware.RequireAuth)
+	{
+		admin.GET("/:id/activities", handler.GetActivitiesByUserID)
+	}
 }
