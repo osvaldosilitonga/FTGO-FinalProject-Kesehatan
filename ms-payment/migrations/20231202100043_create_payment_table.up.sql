@@ -7,6 +7,9 @@ CREATE TABLE payments (
   amount INT NOT NULL,
   description VARCHAR NOT NULL,
   status VARCHAR(20) NOT NULL,
+  payment_method VARCHAR(20),
+  merchant_name VARCHAR,
+  currency VARCHAR(5),
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );

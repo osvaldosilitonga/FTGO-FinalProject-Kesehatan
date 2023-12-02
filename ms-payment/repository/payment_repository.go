@@ -3,13 +3,14 @@ package repository
 import (
 	"errors"
 	"payment/models/entity"
+	"payment/models/web"
 
 	"gorm.io/gorm"
 )
 
 type PaymentRepository interface {
 	Save(d *entity.Payments) error
-	Update(orderId string, status string, amount int) (*entity.Payments, error)
+	UpdateFromXendit(d *web.XenditCallbackBody) (*entity.Payments, error)
 }
 
 type PaymentRepositoryImpl struct {
@@ -31,22 +32,27 @@ func (p *PaymentRepositoryImpl) Save(d *entity.Payments) error {
 	return nil
 }
 
-func (p *PaymentRepositoryImpl) Update(orderId string, status string, amount int) (*entity.Payments, error) {
+func (p *PaymentRepositoryImpl) UpdateFromXendit(d *web.XenditCallbackBody) (*entity.Payments, error) {
 	var data entity.Payments
-	err := p.DB.Where("order_id = ?", orderId).First(&data).Error
+
+	tx := p.DB.Begin()
+	defer tx.Commit()
+
+	err := tx.Where("order_id = ?", d.ExternalID).First(&data).Error
 	if err != nil {
+		tx.Rollback()
 		return nil, errors.New("Data not found")
 	}
 
-	if status != "" {
-		data.Status = status
-	}
-	if amount > 1000 {
-		data.Amount = amount
-	}
+	data.Status = d.Status
+	data.PaymentMethod = d.PaymentMethod
+	data.MerchantName = d.MerchantName
+	data.Currency = d.Currency
+	data.UpdatedAt = d.Updated
 
 	err = p.DB.Save(&data).Error
 	if err != nil {
+		tx.Rollback()
 		return nil, errors.New("Failed to update data")
 	}
 
