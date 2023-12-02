@@ -105,18 +105,18 @@ func RegisterAdmin(c echo.Context) error {
 }
 
 func LoginUser(c echo.Context) error {
-	input := new(entity.User)
+	input := new(dto.UserLoginRequest)
 	if err := c.Bind(input); err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]interface{}{"message": "Invalid request data"})
 	}
 
 	var user entity.User
 	if err := config.DB.Where("email = ?", input.Email).First(&user).Error; err != nil {
-		return c.JSON(http.StatusUnauthorized, map[string]interface{}{"message": "Invalid credentials"})
+		return c.JSON(http.StatusNotFound, map[string]interface{}{"message": "Email not found"})
 	}
 
 	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(input.Password)); err != nil {
-		return c.JSON(http.StatusUnauthorized, map[string]interface{}{"message": "Invalid credentials"})
+		return c.JSON(http.StatusBadRequest, map[string]interface{}{"message": "Invalid password"})
 	}
 
 	tokenString, err := middleware.GenerateToken(user.ID, user.Role)
