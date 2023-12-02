@@ -18,6 +18,11 @@ var (
 		Status: "not found",
 	}
 
+	ApiForbidden = web.ErrWebResponse{
+		Code:   http.StatusForbidden,
+		Status: "forbidden",
+	}
+
 	ApiInternalServer = web.ErrWebResponse{
 		Code:   http.StatusInternalServerError,
 		Status: "internal server error",
@@ -32,5 +37,5 @@ var (
 func ErrorMessage(c echo.Context, apiErr *web.ErrWebResponse, detail any) error {
 	apiErr.Detail = detail
 
-	return c.JSON(apiErr.Code, apiErr)
+	return echo.NewHTTPError(apiErr.Code, apiErr)
 }

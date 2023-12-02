@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"gateway/initializers"
+	"gateway/middlewares"
 	"gateway/router"
 	"os"
 
@@ -19,7 +20,7 @@ func main() {
 	e := echo.New()
 
 	e.Use(middleware.Recover())
-	e.Use(middleware.Logger())
+	e.Use(middleware.RequestLoggerWithConfig(middlewares.LogrusConfig()))
 	e.Validator = &initializers.CustomValidator{Validator: validator.New()}
 
 	router.Router(e)
