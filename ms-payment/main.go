@@ -3,10 +3,10 @@ package main
 import (
 	"fmt"
 	"log"
-	"net/http"
 	"os"
 	"payment/initializers"
 	"payment/middlewares"
+	"payment/routes"
 
 	"github.com/go-playground/validator"
 	"github.com/joho/godotenv"
@@ -27,9 +27,7 @@ func main() {
 	e.Use(middleware.RequestLoggerWithConfig(middlewares.LogrusConfig()))
 	e.Validator = &initializers.CustomValidator{Validator: validator.New()}
 
-	e.GET("/", func(c echo.Context) error {
-		return c.String(http.StatusOK, "Hello, World!")
-	})
+	routes.Routes(e)
 
 	paymentPort := os.Getenv("PAYMENT_PORT")
 	e.Logger.Fatal(e.Start(fmt.Sprintf(":%s", paymentPort)))
