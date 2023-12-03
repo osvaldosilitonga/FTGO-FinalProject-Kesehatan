@@ -1,7 +1,6 @@
 package services
 
 import (
-	"fmt"
 	"log"
 	"notification/configs"
 	"notification/handlers"
@@ -52,12 +51,10 @@ func (p *PaymentServiceImpl) InvoiceNotification() {
 		var data []byte
 
 		for d := range msgs {
-			fmt.Println(d.Body)
-
 			data = d.Body
 			err := handlers.InvoiceNotification(data)
 			for err != nil {
-				fmt.Println("Handlers Invoice Error: ", err)
+				log.Println("Handlers Invoice Error: ", err)
 				err = handlers.InvoiceNotification(data)
 			}
 		}
