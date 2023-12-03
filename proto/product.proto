@@ -12,7 +12,7 @@ service ProductService {
     rpc UpdateProduct(UpdateProductRequest) returns (Product);
     rpc DeleteProduct(DeleteProductRequest) returns (Product);
     rpc ListProduct(Empty) returns (ListProductResponse);
-    rpc CheckStock(CheckStockRequest) returns (google.protobuf.Empty);
+    rpc CheckStock(CheckStockRequest) returns (ListProductResponse);
     rpc CheckProductExist(CheckProductExistRequest) returns (google.protobuf.Empty);
 }
 

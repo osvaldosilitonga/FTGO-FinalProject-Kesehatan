@@ -175,7 +175,8 @@ func (p *Product) ListProduct(ctx context.Context, req *pb.Empty) (*pb.ListProdu
 	return productsResponse, nil
 }
 
-func (p *Product) CheckStock(ctx context.Context, req *pb.CheckStockRequest) (*emptypb.Empty, error) {
+func (p *Product) CheckStock(ctx context.Context, req *pb.CheckStockRequest) (*pb.ListProductResponse, error) {
+	products := pb.ListProductResponse{}
 
 	for _, product := range req.Datas {
 		id, err := primitive.ObjectIDFromHex(product.Id)
@@ -197,9 +198,11 @@ func (p *Product) CheckStock(ctx context.Context, req *pb.CheckStockRequest) (*e
 		if data.Stock < product.Quantity {
 			return nil, status.Error(codes.InvalidArgument, fmt.Sprintf("product with id: %s, out of stock", product.Id))
 		}
+
+		products.Products = append(products.Products, helper.ToProductResponse(data))
 	}
 
-	return new(emptypb.Empty), nil
+	return &products, nil
 }
 
 func (p *Product) CheckProductExist(ctx context.Context, req *pb.CheckProductExistRequest) (*emptypb.Empty, error) {

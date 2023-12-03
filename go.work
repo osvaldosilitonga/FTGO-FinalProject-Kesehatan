@@ -5,4 +5,5 @@ use ./api-gateway
 use ./ms-user
 use ./ms-payment
 use ./ms-notification
+use ./ms-order
 
