@@ -1,10 +1,12 @@
 package controllers
 
 import (
+	"log"
 	"payment/api"
 	"payment/models/entity"
 	"payment/models/web"
 	"payment/repository"
+	"payment/services"
 	"payment/utils"
 
 	"github.com/labstack/echo/v4"
@@ -17,12 +19,14 @@ type Payment interface {
 type PaymentImpl struct {
 	XenditApi api.XenditApi
 	Repo      repository.PaymentRepository
+	Notif     services.NotificationService
 }
 
-func NewPaymentController(x api.XenditApi, r repository.PaymentRepository) Payment {
+func NewPaymentController(x api.XenditApi, r repository.PaymentRepository, n services.NotificationService) Payment {
 	return &PaymentImpl{
 		XenditApi: x,
 		Repo:      r,
+		Notif:     n,
 	}
 }
 
@@ -57,6 +61,16 @@ func (p *PaymentImpl) Create(c echo.Context) error {
 	if err != nil {
 		return utils.ErrorMessage(c, &utils.ApiInternalServer, err.Error())
 	}
+
+	// Send invoice to email notification
+	go func() {
+		err = p.Notif.SendInvoice(resp)
+		for err != nil {
+			err = p.Notif.SendInvoice(resp)
+		}
+
+		log.Printf("[Success] Add invoice: '%v' to message broker", resp.InvoiceID)
+	}()
 
 	return utils.SuccessMessage(c, &utils.ApiCreate, resp)
 }

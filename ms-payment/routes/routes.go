@@ -11,14 +11,22 @@ import (
 	"payment/controllers"
 
 	"github.com/labstack/echo/v4"
+	amqp "github.com/rabbitmq/amqp091-go"
 )
 
-func Routes(e *echo.Echo) {
+func Routes(e *echo.Echo, rch *amqp.Channel) {
 	db := configs.InitDB()
+	// _, ch := configs.InitRabbit()
+	// defer func() {
+	// 	conn.Close()
+	// 	ch.Close()
+	// }()
+
 	repository := repository.NewPaymentRepository(db)
 
 	xenditApi := api.NewXenditAPI(os.Getenv("XENDIT_API_KEY"))
-	paymentController := controllers.NewPaymentController(xenditApi, repository)
+	notificationService := services.NewNotificationService(rch)
+	paymentController := controllers.NewPaymentController(xenditApi, repository, notificationService)
 	payment := e.Group("/payment")
 	{
 		payment.POST("", paymentController.Create)

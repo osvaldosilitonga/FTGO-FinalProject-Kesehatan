@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"payment/configs"
 	"payment/initializers"
 	"payment/middlewares"
 	"payment/routes"
@@ -23,11 +24,17 @@ func init() {
 func main() {
 	e := echo.New()
 
+	conn, rch := configs.InitRabbit()
+	defer func() {
+		conn.Close()
+		rch.Close()
+	}()
+
 	e.Use(middleware.Recover())
 	e.Use(middleware.RequestLoggerWithConfig(middlewares.LogrusConfig()))
 	e.Validator = &initializers.CustomValidator{Validator: validator.New()}
 
-	routes.Routes(e)
+	routes.Routes(e, rch)
 
 	paymentPort := os.Getenv("PAYMENT_PORT")
 	e.Logger.Fatal(e.Start(fmt.Sprintf(":%s", paymentPort)))
