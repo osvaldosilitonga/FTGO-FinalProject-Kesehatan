@@ -19,6 +19,7 @@ func Router(r *echo.Echo) {
 
 	productController := controllers.NewProductController(productService)
 	userController := controllers.NewUserController(userService, redisClient)
+	paymentController := controllers.NewPaymentController()
 
 	v1 := r.Group("/api/v1")
 
@@ -37,6 +38,11 @@ func Router(r *echo.Echo) {
 	{
 		user.POST("/login", userController.Login)
 		user.POST("/register", userController.Register)
+	}
+
+	payment := v1.Group("/payment")
+	{
+		payment.POST("", paymentController.Create)
 	}
 
 }
