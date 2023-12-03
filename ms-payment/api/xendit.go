@@ -47,6 +47,7 @@ func (x XenditApiImpl) CreteInvoice(d *web.PaymentRequest) (*web.InvoiceResponse
 		ExpairyDate: resp.ExpiryDate.Local(),
 		ExternalId:  resp.ExternalId,
 		PayerEmail:  *resp.PayerEmail,
+		Amount:      int(resp.Amount),
 	}
 
 	return &data, nil

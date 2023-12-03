@@ -23,4 +23,5 @@ type InvoiceResponse struct {
 	ExpairyDate time.Time `json:"expairy_date"`
 	ExternalId  string    `json:"external_id"`
 	PayerEmail  string    `json:"payer_email"`
+	Amount      int       `json:"amount"`
 }
