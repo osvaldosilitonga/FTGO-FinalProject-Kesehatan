@@ -30,6 +30,8 @@ func main() {
 	log.Println("RabbitMQ Connected")
 
 	paymentService := services.NewPaymentService(rch)
+	userService := services.NewUserService(rch)
 
 	paymentService.InvoiceNotification()
+	userService.UserNotification()
 }
