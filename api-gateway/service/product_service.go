@@ -19,7 +19,7 @@ type Product interface {
 	GetProduct(ctx context.Context, req *pb.GetProductRequest) (*pb.Product, error)
 	UpdateProduct(ctx context.Context, req *pb.UpdateProductRequest) (*pb.Product, error)
 	DeleteProduct(ctx context.Context, req *pb.DeleteProductRequest) (*pb.Product, error)
-	CheckStock(ctx context.Context, req *pb.CheckStockRequest) (*emptypb.Empty, error)
+	CheckStock(ctx context.Context, req *pb.CheckStockRequest) (*pb.ListProductResponse, error)
 	CheckProductExist(ctx context.Context, req *pb.CheckProductExistRequest) (*emptypb.Empty, error)
 }
 
@@ -27,7 +27,7 @@ type ProductImpl struct {
 	Conn *grpc.ClientConn
 }
 
-func NewProductService(conn *grpc.ClientConn) *ProductImpl {
+func NewProductService(conn *grpc.ClientConn) Product {
 	return &ProductImpl{
 		Conn: conn,
 	}
@@ -101,7 +101,7 @@ func (p *ProductImpl) DeleteProduct(ctx context.Context, req *pb.DeleteProductRe
 	return product, nil
 }
 
-func (p *ProductImpl) CheckStock(ctx context.Context, req *pb.CheckStockRequest) (*emptypb.Empty, error) {
+func (p *ProductImpl) CheckStock(ctx context.Context, req *pb.CheckStockRequest) (*pb.ListProductResponse, error) {
 	productClient := pb.NewProductServiceClient(p.Conn)
 
 	product, err := productClient.CheckStock(ctx, req)

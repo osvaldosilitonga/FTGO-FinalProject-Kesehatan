@@ -28,7 +28,7 @@ type ProductServiceClient interface {
 	UpdateProduct(ctx context.Context, in *UpdateProductRequest, opts ...grpc.CallOption) (*Product, error)
 	DeleteProduct(ctx context.Context, in *DeleteProductRequest, opts ...grpc.CallOption) (*Product, error)
 	ListProduct(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*ListProductResponse, error)
-	CheckStock(ctx context.Context, in *CheckStockRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	CheckStock(ctx context.Context, in *CheckStockRequest, opts ...grpc.CallOption) (*ListProductResponse, error)
 	CheckProductExist(ctx context.Context, in *CheckProductExistRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
@@ -85,8 +85,8 @@ func (c *productServiceClient) ListProduct(ctx context.Context, in *Empty, opts 
 	return out, nil
 }
 
-func (c *productServiceClient) CheckStock(ctx context.Context, in *CheckStockRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
-	out := new(emptypb.Empty)
+func (c *productServiceClient) CheckStock(ctx context.Context, in *CheckStockRequest, opts ...grpc.CallOption) (*ListProductResponse, error) {
+	out := new(ListProductResponse)
 	err := c.cc.Invoke(ctx, "/product.ProductService/CheckStock", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -112,7 +112,7 @@ type ProductServiceServer interface {
 	UpdateProduct(context.Context, *UpdateProductRequest) (*Product, error)
 	DeleteProduct(context.Context, *DeleteProductRequest) (*Product, error)
 	ListProduct(context.Context, *Empty) (*ListProductResponse, error)
-	CheckStock(context.Context, *CheckStockRequest) (*emptypb.Empty, error)
+	CheckStock(context.Context, *CheckStockRequest) (*ListProductResponse, error)
 	CheckProductExist(context.Context, *CheckProductExistRequest) (*emptypb.Empty, error)
 	mustEmbedUnimplementedProductServiceServer()
 }
@@ -136,7 +136,7 @@ func (UnimplementedProductServiceServer) DeleteProduct(context.Context, *DeleteP
 func (UnimplementedProductServiceServer) ListProduct(context.Context, *Empty) (*ListProductResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListProduct not implemented")
 }
-func (UnimplementedProductServiceServer) CheckStock(context.Context, *CheckStockRequest) (*emptypb.Empty, error) {
+func (UnimplementedProductServiceServer) CheckStock(context.Context, *CheckStockRequest) (*ListProductResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CheckStock not implemented")
 }
 func (UnimplementedProductServiceServer) CheckProductExist(context.Context, *CheckProductExistRequest) (*emptypb.Empty, error) {

@@ -72,5 +72,5 @@ func (p *PaymentImpl) Create(c echo.Context) error {
 		log.Printf("[Success] Add invoice: '%v' to message broker", resp.InvoiceID)
 	}()
 
-	return utils.SuccessMessage(c, &utils.ApiCreate, resp)
+	return c.JSON(201, resp)
 }
