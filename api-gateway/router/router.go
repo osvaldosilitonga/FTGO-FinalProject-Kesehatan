@@ -41,6 +41,8 @@ func Router(r *echo.Echo) {
 		user.POST("/login", userController.Login)
 		user.POST("/register", userController.Register)
 		user.POST("/register/admin", userController.Register)
+
+		user.GET("/profile/:id", userController.GetUserProfile, middlewares.RequireAuth)
 	}
 
 	order := v1.Group("/order")

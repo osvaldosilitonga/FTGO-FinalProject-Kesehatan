@@ -89,6 +89,8 @@ func IsUser(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		role := c.Get("role").(string)
 
+		fmt.Println(role, "<----- Role")
+
 		if role != "user" {
 			return utils.ErrorMessage(c, &utils.ApiForbidden, "not allowed to access this endpoint")
 		}
@@ -100,6 +102,8 @@ func IsUser(next echo.HandlerFunc) echo.HandlerFunc {
 func IsAdmin(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		role := c.Get("role").(string)
+
+		fmt.Println(role, "<----- Role")
 
 		if role != "admin" {
 			return utils.ErrorMessage(c, &utils.ApiForbidden, "not allowed to access this endpoint")

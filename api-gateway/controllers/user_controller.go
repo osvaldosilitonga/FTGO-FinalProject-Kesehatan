@@ -8,6 +8,7 @@ import (
 	"gateway/service"
 	"gateway/utils"
 	"log"
+	"strconv"
 	"time"
 
 	"github.com/labstack/echo/v4"
@@ -126,4 +127,25 @@ func (u *UserImpl) RegisterAdmin(c echo.Context) error {
 		CreatedAt: resp.User.CreatedAt,
 	}
 	return utils.SuccessMessage(c, &utils.ApiOk, response)
+}
+
+func (u *UserImpl) GetUserProfile(c echo.Context) error {
+	param := c.Param("id")
+	paramID, err := strconv.Atoi(param)
+	userID := c.Get("user").(int)
+
+	if paramID != userID {
+		return utils.ErrorMessage(c, &utils.ApiForbidden, "Forbidden, Cannot access profile")
+	}
+
+	// make request to user service
+	resp, code, err := u.UserService.GetUserProfile(userID)
+	if err != nil {
+		return utils.ErrorMessage(c, &utils.ApiInternalServer, nil)
+	}
+	if code != 200 {
+		return utils.HttpCodeError(c, code, resp.Message)
+	}
+
+	return utils.SuccessMessage(c, &utils.ApiOk, resp.User)
 }

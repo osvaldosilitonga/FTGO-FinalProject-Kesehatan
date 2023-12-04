@@ -28,6 +28,8 @@ type RegisterResponse struct {
 	CreatedAt string `json:"created_at"`
 }
 
+// ------------------------------------------------------------
+
 // HttpUserLogin is a struct to response login body from user service
 type HttpUserLogin struct {
 	ID      int    `json:"id"`
@@ -45,4 +47,16 @@ type User struct {
 type HttpUserRegister struct {
 	Message string `json:"message"`
 	User    User   `json:"user"`
+}
+
+type Profile struct {
+	UserID    int    `json:"user_id"`
+	Address   string `json:"address"`
+	Phone     string `json:"phone"`
+	Birthdate string `json:"birthdate"`
+	Gender    string `json:"gender"`
+}
+type HttpUserProfile struct {
+	Message string  `json:"message"`
+	User    Profile `json:"user"`
 }
