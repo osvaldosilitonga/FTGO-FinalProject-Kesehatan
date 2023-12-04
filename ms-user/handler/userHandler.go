@@ -6,7 +6,6 @@ import (
 	"miniproject/entity"
 	"miniproject/middleware"
 	"net/http"
-	"time"
 
 	"github.com/labstack/echo/v4"
 	"golang.org/x/crypto/bcrypt"
@@ -48,11 +47,6 @@ func RegisterUser(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, map[string]interface{}{"message": "Failed to create user profile"})
 	}
 
-	registrationTime := time.Now()
-	if err := sendRegistrationEmail(user.Email, user.Name, userProfile.Address, registrationTime); err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]interface{}{"message": "Failed to send registration email"})
-	}
-
 	user.Password = ""
 
 	return c.JSON(http.StatusCreated, map[string]interface{}{"message": "Registration successful", "user": user})
@@ -92,11 +86,6 @@ func RegisterAdmin(c echo.Context) error {
 
 	if err := config.DB.Create(&userProfile).Error; err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]interface{}{"message": "Failed to create user profile"})
-	}
-
-	registrationTime := time.Now()
-	if err := sendRegistrationEmail(user.Email, user.Name, userProfile.Address, registrationTime); err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]interface{}{"message": "Failed to send registration email"})
 	}
 
 	user.Password = ""
