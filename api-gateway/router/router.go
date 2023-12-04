@@ -42,6 +42,7 @@ func Router(r *echo.Echo) {
 		user.POST("/register", userController.Register)
 		user.POST("/register/admin", userController.RegisterAdmin)
 
+		user.PUT("/profile/:id", userController.UpdateUserProfile, middlewares.RequireAuth)
 		user.GET("/profile/:id", userController.GetUserProfile, middlewares.RequireAuth)
 	}
 

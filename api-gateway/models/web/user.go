@@ -16,6 +16,13 @@ type UsersRegisterRequest struct {
 	Gender    string `json:"gender" validate:"required"`
 }
 
+type UsersUpdateProfileRequest struct {
+	Address   string `json:"address"`
+	Phone     string `json:"phone"`
+	Birthdate string `json:"birthdate"`
+	Gender    string `json:"gender"`
+}
+
 // Response
 type LoginResponse struct {
 	Token string `json:"token"`
@@ -66,4 +73,8 @@ type HttpUserProfile struct {
 	Gender    string `json:"gender"`
 	Email     string `json:"email"`
 	Name      string `json:"name"`
+}
+
+type HttpUserUpdateProfile struct {
+	UserProfile Profile `json:"user_profile"`
 }

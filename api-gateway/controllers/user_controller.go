@@ -18,6 +18,9 @@ import (
 type User interface {
 	Login(c echo.Context) error
 	Register(c echo.Context) error
+	RegisterAdmin(c echo.Context) error
+	GetUserProfile(c echo.Context) error
+	UpdateUserProfile(c echo.Context) error
 }
 
 type UserImpl struct {
@@ -25,7 +28,7 @@ type UserImpl struct {
 	RedisClient *redis.Client
 }
 
-func NewUserController(us service.User, rc *redis.Client) *UserImpl {
+func NewUserController(us service.User, rc *redis.Client) User {
 	return &UserImpl{
 		UserService: us,
 		RedisClient: rc,
@@ -144,6 +147,39 @@ func (u *UserImpl) GetUserProfile(c echo.Context) error {
 
 	// make request to user service
 	resp, code, err := u.UserService.GetUserProfile(userID)
+	if err != nil {
+		return utils.ErrorMessage(c, &utils.ApiInternalServer, nil)
+	}
+	if code != 200 {
+		return utils.HttpCodeError(c, code, err.Error())
+	}
+
+	return utils.SuccessMessage(c, &utils.ApiOk, resp)
+}
+
+func (u *UserImpl) UpdateUserProfile(c echo.Context) error {
+	param := c.Param("id")
+	paramID, err := strconv.Atoi(param)
+	if err != nil {
+		return utils.ErrorMessage(c, &utils.ApiBadRequest, "invalid user id")
+	}
+
+	userID := c.Get("id").(int)
+
+	if paramID != userID {
+		return utils.ErrorMessage(c, &utils.ApiForbidden, "Forbidden, Cannot access profile")
+	}
+
+	req := web.UsersUpdateProfileRequest{}
+	if err := c.Bind(&req); err != nil {
+		return utils.ErrorMessage(c, &utils.ApiBadRequest, err.Error())
+	}
+	if err := c.Validate(&req); err != nil {
+		return utils.ErrorMessage(c, &utils.ApiBadRequest, err.Error())
+	}
+
+	// make request to user service
+	resp, code, err := u.UserService.UpdateUserProfile(userID, &req)
 	if err != nil {
 		return utils.ErrorMessage(c, &utils.ApiInternalServer, nil)
 	}
