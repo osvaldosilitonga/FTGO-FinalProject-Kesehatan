@@ -67,6 +67,7 @@ func (o *Order) CreateOrderProduct(ctx context.Context, req *orderPb.CreateOrder
 	now := time.Now().UnixMilli()
 	order := &entity.Orders{
 		UserId:      int(req.User.Id),
+		UserEmail:   req.User.Email,
 		Type:        "product",
 		TotalAmount: int64(totalAmount),
 		Status:      "PENDING",

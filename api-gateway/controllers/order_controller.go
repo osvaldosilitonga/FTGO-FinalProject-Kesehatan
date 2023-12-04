@@ -30,6 +30,8 @@ func NewOrderController(so service.Order, ps service.Payment) OrderController {
 }
 
 func (o *OrderControllerImpl) CreateOrderProduct(c echo.Context) error {
+	id := c.Get("id").(int)
+
 	req := &web.CreateOrderProductRequest{}
 	if err := c.Bind(req); err != nil {
 		return utils.ErrorMessage(c, &utils.ApiBadRequest, err)
@@ -49,9 +51,8 @@ func (o *OrderControllerImpl) CreateOrderProduct(c echo.Context) error {
 
 	order := &pb.CreateOrderProductRequest{
 		User: &pb.User{
-			Id:    1,
-			Email: "test",
-			Role:  "user",
+			Id:    int32(id),
+			Email: c.Get("email").(string),
 		},
 		Products: products,
 	}
@@ -65,16 +66,16 @@ func (o *OrderControllerImpl) CreateOrderProduct(c echo.Context) error {
 
 	paymentRequest := &web.CreatePaymentRequest{
 		OrderID:     orderId,
-		UserID:      int(res.UserId),
-		Email:       "jacksparrow257257@gmail.com",
+		UserID:      id,
+		Email:       c.Get("email").(string),
 		Amount:      int(res.TotalAmount),
-		Description: "Payment for product order",
+		Description: "Payment for product orders",
 	}
 
 	resp, code, err := o.PaymentService.CreatePayment(paymentRequest)
 	for err != nil || code != 201 {
 		fmt.Println("Payment service error, retrying...")
-		fmt.Println(err, "<---------------- err")
+
 		resp, code, err = o.PaymentService.CreatePayment(paymentRequest)
 	}
 
