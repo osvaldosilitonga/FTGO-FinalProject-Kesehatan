@@ -22,11 +22,11 @@ func main() {
 
 	e := echo.New()
 
-	// conn, rch := configs.InitRabbit()
-	// defer func() {
-	// 	conn.Close()
-	// 	rch.Close()
-	// }()
+	conn, rch := config.InitRabbit()
+	defer func() {
+		conn.Close()
+		rch.Close()
+	}()
 
 	// Middlewares
 	e.Use(middleware.Logger())
@@ -37,7 +37,7 @@ func main() {
 	config.InitDB()
 
 	// Routes
-	routes.RegisterRoutes(e)
+	routes.RegisterRoutes(e, rch)
 
 	// Start the server
 	port := os.Getenv("PORT")

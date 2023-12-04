@@ -8,10 +8,25 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
+	amqp "github.com/rabbitmq/amqp091-go"
 	"golang.org/x/crypto/bcrypt"
 )
 
-func RegisterUser(c echo.Context) error {
+type UserHandler interface {
+	RegisterUser(c echo.Context) error
+	RegisterAdmin(c echo.Context) error
+	LoginUser(c echo.Context) error
+}
+
+type UserHandlerImpl struct {
+	RabbitCH *amqp.Channel
+}
+
+func NewUserHandler(rc *amqp.Channel) UserHandler {
+	return &UserHandlerImpl{}
+}
+
+func (u *UserHandlerImpl) RegisterUser(c echo.Context) error {
 	input := dto.UserRegisterRequest{}
 	if err := c.Bind(&input); err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]interface{}{"message": "Invalid request data"})
@@ -52,7 +67,7 @@ func RegisterUser(c echo.Context) error {
 	return c.JSON(http.StatusCreated, map[string]interface{}{"message": "Registration successful", "user": user})
 }
 
-func RegisterAdmin(c echo.Context) error {
+func (u *UserHandlerImpl) RegisterAdmin(c echo.Context) error {
 	input := dto.UserRegisterRequest{}
 	if err := c.Bind(&input); err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]interface{}{"message": "Invalid request data"})
@@ -93,7 +108,7 @@ func RegisterAdmin(c echo.Context) error {
 	return c.JSON(http.StatusCreated, map[string]interface{}{"message": "Registration successful", "user": user})
 }
 
-func LoginUser(c echo.Context) error {
+func (u *UserHandlerImpl) LoginUser(c echo.Context) error {
 	input := new(dto.UserLoginRequest)
 	if err := c.Bind(input); err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]interface{}{"message": "Invalid request data"})
