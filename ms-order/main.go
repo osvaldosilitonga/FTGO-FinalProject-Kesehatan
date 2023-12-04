@@ -5,8 +5,8 @@ import (
 	"log"
 	"net"
 	"order/configs"
+	"order/controllers"
 	"order/repository"
-	"order/services"
 	"os"
 
 	orderPB "order/internal/order"
@@ -34,14 +34,11 @@ func main() {
 
 	orderRepository := repository.NewOrderRepository(dbCollection, dbClient)
 
-	// productGrpc := configs.ProductGrpc(os.Getenv("PRODUCT_GRPC_SERVER"))
-	// productService := services.NewProductService(productGrpc)
-
-	orderService := services.NewOrderService(orderRepository)
+	orderController := controllers.NewOrderController(orderRepository)
 
 	var opts []grpc.ServerOption
 	grpcServer := grpc.NewServer(opts...)
-	orderPB.RegisterOrderServiceServer(grpcServer, orderService)
+	orderPB.RegisterOrderServiceServer(grpcServer, orderController)
 
 	log.Printf("Starting Order Service gRPC listener on port : %s\n", port)
 	if err := grpcServer.Serve(lis); err != nil {

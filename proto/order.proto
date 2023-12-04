@@ -8,11 +8,13 @@ option go_package = "internal/order";
 
 service OrderService {
     rpc CreateOrderProduct(CreateOrderProductRequest) returns (Order);
-    // rpc UpdateStatus(UpdateOrderRequest) returns (UpdateOrderResponse) {}
-    // rpc Cancel(DeleteOrderRequest) returns (DeleteOrderResponse) {}
+    rpc UpdateStatus(UpdateOrderStatusRequest) returns (Order) {}
+    rpc Cancel(CancelOrderRequest) returns (Empty) {}
     // rpc FindByOrderId(GetOrderRequest) returns (GetOrderResponse) {}
     // rpc FindByUserId(GetOrdersByUserIdRequest) returns (GetOrdersByUserIdResponse) {}
 }
+
+message Empty{}
 
 message Order {
   string order_id = 1;
@@ -40,4 +42,13 @@ message Product {
 message CreateOrderProductRequest {
     User user = 1;
     repeated Product products = 2;
+}
+
+message UpdateOrderStatusRequest {
+    string order_id = 1;
+    string status = 2;
+}
+
+message CancelOrderRequest {
+    string order_id = 1;
 }

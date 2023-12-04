@@ -16,11 +16,6 @@ import (
 
 func Routes(e *echo.Echo, rch *amqp.Channel) {
 	db := configs.InitDB()
-	// _, ch := configs.InitRabbit()
-	// defer func() {
-	// 	conn.Close()
-	// 	ch.Close()
-	// }()
 
 	repository := repository.NewPaymentRepository(db)
 

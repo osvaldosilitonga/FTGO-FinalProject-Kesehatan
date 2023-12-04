@@ -1,14 +1,17 @@
-package services
+package controllers
 
 import (
 	"context"
-	"fmt"
 	"order/helper"
 	orderPb "order/internal/order"
 	productPb "order/internal/product"
 	"order/models/entity"
 	"order/repository"
+	"order/services"
 	"time"
+
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 type Order struct {
@@ -17,7 +20,7 @@ type Order struct {
 	orderRepo repository.OrderRepository
 }
 
-func NewOrderService(or repository.OrderRepository) *Order {
+func NewOrderController(or repository.OrderRepository) *Order {
 	return &Order{
 		orderRepo: or,
 	}
@@ -37,9 +40,9 @@ func (o *Order) CreateOrderProduct(ctx context.Context, req *orderPb.CreateOrder
 		data.Datas = append(data.Datas, d)
 	}
 
-	productsDetails, err := CheckStock(ctx, data)
+	productsDetails, err := services.CheckStock(ctx, data)
 	if err != nil {
-		return nil, err
+		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 
 	// count total amount
@@ -61,10 +64,7 @@ func (o *Order) CreateOrderProduct(ctx context.Context, req *orderPb.CreateOrder
 		}
 	}
 
-	fmt.Println(productsDetails)
-
 	now := time.Now().UnixMilli()
-
 	order := &entity.Orders{
 		UserId:      int(req.User.Id),
 		Type:        "product",
@@ -77,7 +77,7 @@ func (o *Order) CreateOrderProduct(ctx context.Context, req *orderPb.CreateOrder
 
 	r, err := o.orderRepo.Save(ctx, order)
 	if err != nil {
-		return nil, err
+		return nil, status.Error(codes.Internal, err.Error())
 	}
 
 	response := helper.ToOrderResponse(r)

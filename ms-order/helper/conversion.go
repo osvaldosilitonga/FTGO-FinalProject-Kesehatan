@@ -3,6 +3,8 @@ package helper
 import (
 	pb "order/internal/order"
 	"order/models/entity"
+
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 func ToOrderResponse(data *entity.Orders) *pb.Order {
@@ -17,7 +19,7 @@ func ToOrderResponse(data *entity.Orders) *pb.Order {
 	}
 
 	return &pb.Order{
-		OrderId:     data.Id,
+		OrderId:     primitive.ObjectID(data.Id).Hex(),
 		UserId:      int32(data.UserId),
 		Type:        data.Type,
 		TotalAmount: data.TotalAmount,
