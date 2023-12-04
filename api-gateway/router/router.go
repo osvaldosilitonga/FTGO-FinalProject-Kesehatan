@@ -40,7 +40,7 @@ func Router(r *echo.Echo) {
 	{
 		user.POST("/login", userController.Login)
 		user.POST("/register", userController.Register)
-		user.POST("/register/admin", userController.Register)
+		user.POST("/register/admin", userController.RegisterAdmin)
 
 		user.GET("/profile/:id", userController.GetUserProfile, middlewares.RequireAuth)
 	}
