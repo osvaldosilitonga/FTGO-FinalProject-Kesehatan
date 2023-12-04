@@ -151,5 +151,7 @@ func (u *UserImpl) GetUserProfile(id int) (*web.HttpUserProfile, int, error) {
 		return nil, http.StatusInternalServerError, err
 	}
 
+	fmt.Println("-----> user profile: ", user)
+
 	return &user, resp.StatusCode, nil
 }

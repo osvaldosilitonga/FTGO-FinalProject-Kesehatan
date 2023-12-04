@@ -132,7 +132,11 @@ func (u *UserImpl) RegisterAdmin(c echo.Context) error {
 func (u *UserImpl) GetUserProfile(c echo.Context) error {
 	param := c.Param("id")
 	paramID, err := strconv.Atoi(param)
-	userID := c.Get("user").(int)
+	if err != nil {
+		return utils.ErrorMessage(c, &utils.ApiBadRequest, "invalid user id")
+	}
+
+	userID := c.Get("id").(int)
 
 	if paramID != userID {
 		return utils.ErrorMessage(c, &utils.ApiForbidden, "Forbidden, Cannot access profile")
@@ -144,8 +148,8 @@ func (u *UserImpl) GetUserProfile(c echo.Context) error {
 		return utils.ErrorMessage(c, &utils.ApiInternalServer, nil)
 	}
 	if code != 200 {
-		return utils.HttpCodeError(c, code, resp.Message)
+		return utils.HttpCodeError(c, code, err.Error())
 	}
 
-	return utils.SuccessMessage(c, &utils.ApiOk, resp.User)
+	return utils.SuccessMessage(c, &utils.ApiOk, resp)
 }

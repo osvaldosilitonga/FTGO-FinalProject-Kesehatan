@@ -57,6 +57,13 @@ type Profile struct {
 	Gender    string `json:"gender"`
 }
 type HttpUserProfile struct {
-	Message string  `json:"message"`
-	User    Profile `json:"user"`
+	// Message string `json:"message"`
+	// User    Profile `json:"user"`
+	UserID    int    `json:"user_id"`
+	Address   string `json:"address"`
+	Phone     string `json:"phone"`
+	Birthdate string `json:"birthdate"`
+	Gender    string `json:"gender"`
+	Email     string `json:"email"`
+	Name      string `json:"name"`
 }
