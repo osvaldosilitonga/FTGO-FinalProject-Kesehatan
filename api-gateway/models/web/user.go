@@ -42,6 +42,7 @@ type HttpUserLogin struct {
 	ID      int    `json:"id"`
 	Role    string `json:"role"`
 	Token   string `json:"token"`
+	Email   string `json:"email"`
 	Message string `json:"message"`
 }
 

@@ -54,8 +54,9 @@ func (u *UserImpl) Login(c echo.Context) error {
 	}
 
 	authData := entity.AuthUser{
-		ID:   resp.ID,
-		Role: resp.Role,
+		ID:    resp.ID,
+		Role:  resp.Role,
+		Email: resp.Email,
 	}
 
 	data, err := json.Marshal(authData)
