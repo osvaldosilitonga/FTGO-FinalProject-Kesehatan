@@ -14,3 +14,12 @@ type UserRegisterRequest struct {
 	Birthdate string `json:"birthdate" validate:"required"`
 	Gender    string `json:"gender" validate:"required"`
 }
+
+type UserRegister struct {
+	Name      string `json:"name"`
+	Email     string `json:"email"`
+	Address   string `json:"address"`
+	Phone     string `json:"phone"`
+	Birthdate string `json:"birthdate"`
+	Gender    string `json:"gender"`
+}
