@@ -3,6 +3,7 @@ package router
 import (
 	"gateway/configs"
 	"gateway/controllers"
+	"gateway/middlewares"
 	"gateway/service"
 	"os"
 
@@ -43,7 +44,7 @@ func Router(r *echo.Echo) {
 
 	order := v1.Group("/order")
 	orderController := controllers.NewOrderController(orderService, paymentService)
-	// order.Use(middlewares.RequireAuth)
+	order.Use(middlewares.RequireAuth)
 	{
 		order.POST("", orderController.CreateOrderProduct)
 	}
