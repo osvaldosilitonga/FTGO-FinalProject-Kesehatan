@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User Registration</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #333;
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+        li {
+            margin-bottom: 10px;
+        }
+        p {
+            margin-bottom: 15px;
+        }
+        .footer {
+            margin-top: 30px;
+            border-top: 1px solid #ccc;
+            padding-top: 20px;
+            text-align: center;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Thank You for Registering!</h1>
+        <p>Hello {{.Name}},</p>
+        <p>You have successfully registered with our service. Here are your details:</p>
+        <ul>
+            <li><strong>Name:</strong> {{.Name}}</li>
+            <li><strong>Email:</strong> {{.Email}}</li>
+            <li><strong>Address:</strong> {{.Address}}</li>
+            <li><strong>Phone Number:</strong> {{.Phone}}</li>
+            <li><strong>Birthdate:</strong> {{.Birthdate}}</li>
+            <li><strong>Gender:</strong> {{.Gender}}</li>
+        </ul>
+        <p>Thank you for trusting our service.</p>
+        <p>Regards,</p>
+        <p>Customer Service Team</p>
+    </div>
+    <div class="footer">
+        <p>© 2023 WellnessLink. All rights reserved.</p>
+    </div>
+</body>
+</html>
