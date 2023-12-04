@@ -30,9 +30,9 @@ func Router(r *echo.Echo) {
 		product.GET("/:id", productController.FindByID)
 
 		// Admin Only
-		product.POST("", productController.CreateProduct)
-		product.PUT("/:id", productController.UpdateProduct)
-		product.DELETE("/:id", productController.DeleteProduct)
+		product.POST("", productController.CreateProduct, middlewares.RequireAuth, middlewares.IsAdmin)
+		product.PUT("/:id", productController.UpdateProduct, middlewares.RequireAuth, middlewares.IsAdmin)
+		product.DELETE("/:id", productController.DeleteProduct, middlewares.RequireAuth, middlewares.IsAdmin)
 	}
 
 	user := v1.Group("/user")
@@ -40,19 +40,20 @@ func Router(r *echo.Echo) {
 	{
 		user.POST("/login", userController.Login)
 		user.POST("/register", userController.Register)
+		user.POST("/register/admin", userController.Register)
 	}
 
 	order := v1.Group("/order")
 	orderController := controllers.NewOrderController(orderService, paymentService)
 	order.Use(middlewares.RequireAuth)
 	{
-		order.POST("", orderController.CreateOrderProduct)
+		order.POST("", orderController.CreateOrderProduct, middlewares.IsUser)
 	}
 
-	payment := v1.Group("/payment")
-	paymentController := controllers.NewPaymentController()
-	{
-		payment.POST("", paymentController.Create)
-	}
+	// payment := v1.Group("/payment")
+	// paymentController := controllers.NewPaymentController()
+	// {
+	// 	payment.POST("", paymentController.Create)
+	// }
 
 }

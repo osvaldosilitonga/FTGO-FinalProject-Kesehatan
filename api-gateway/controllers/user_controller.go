@@ -100,3 +100,30 @@ func (u *UserImpl) Register(c echo.Context) error {
 	}
 	return utils.SuccessMessage(c, &utils.ApiOk, response)
 }
+
+func (u *UserImpl) RegisterAdmin(c echo.Context) error {
+	req := web.UsersRegisterRequest{}
+	if err := c.Bind(&req); err != nil {
+		return utils.ErrorMessage(c, &utils.ApiBadRequest, err.Error())
+	}
+	if err := c.Validate(&req); err != nil {
+		return utils.ErrorMessage(c, &utils.ApiBadRequest, err.Error())
+	}
+
+	// make request to user service
+	resp, code, err := u.UserService.RegisterAdmin(&req)
+	if err != nil {
+		return utils.ErrorMessage(c, &utils.ApiInternalServer, nil)
+	}
+	if code != 201 {
+		return utils.HttpCodeError(c, code, resp.Message)
+	}
+
+	response := web.RegisterResponse{
+		ID:        resp.User.ID,
+		Name:      resp.User.Name,
+		Email:     resp.User.Email,
+		CreatedAt: resp.User.CreatedAt,
+	}
+	return utils.SuccessMessage(c, &utils.ApiOk, response)
+}

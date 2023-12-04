@@ -23,7 +23,7 @@ func RequireAuth(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		tokenString := c.Request().Header.Get("Authorization")
 		if tokenString == "" {
-			return utils.ErrorMessage(c, &utils.ApiUnauthorized, fmt.Errorf("Token is missing"))
+			return utils.ErrorMessage(c, &utils.ApiUnauthorized, "Token is missing")
 		}
 
 		// check token in redis
@@ -40,14 +40,14 @@ func RequireAuth(next echo.HandlerFunc) echo.HandlerFunc {
 			return []byte(os.Getenv("JWT_SECRET")), nil
 		})
 		if err != nil || !token.Valid {
-			return utils.ErrorMessage(c, &utils.ApiUnauthorized, fmt.Errorf("Invalid token"))
+			return utils.ErrorMessage(c, &utils.ApiUnauthorized, "Invalid token")
 		}
 
 		claims := token.Claims.(jwt.MapClaims)
 
 		// check exp
 		if float64(time.Now().Unix()) > claims["exp"].(float64) {
-			return utils.ErrorMessage(c, &utils.ApiUnauthorized, fmt.Errorf("Token expired"))
+			return utils.ErrorMessage(c, &utils.ApiUnauthorized, "Token expired")
 		}
 
 		userID := int(claims["id"].(float64))
@@ -83,4 +83,28 @@ func CheckRedisToken(token string) (*User, error) {
 	}
 
 	return &u, nil
+}
+
+func IsUser(next echo.HandlerFunc) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		role := c.Get("role").(string)
+
+		if role != "user" {
+			return utils.ErrorMessage(c, &utils.ApiForbidden, "not allowed to access this endpoint")
+		}
+
+		return next(c)
+	}
+}
+
+func IsAdmin(next echo.HandlerFunc) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		role := c.Get("role").(string)
+
+		if role != "admin" {
+			return utils.ErrorMessage(c, &utils.ApiForbidden, "not allowed to access this endpoint")
+		}
+
+		return next(c)
+	}
 }
