@@ -6,7 +6,6 @@ import (
 	"miniproject/initializers"
 	"miniproject/routes"
 	"os"
-	"payment/configs"
 
 	"github.com/go-playground/validator"
 	"github.com/joho/godotenv"
@@ -23,11 +22,11 @@ func main() {
 
 	e := echo.New()
 
-	conn, rch := configs.InitRabbit()
-	defer func() {
-		conn.Close()
-		rch.Close()
-	}()
+	// conn, rch := configs.InitRabbit()
+	// defer func() {
+	// 	conn.Close()
+	// 	rch.Close()
+	// }()
 
 	// Middlewares
 	e.Use(middleware.Logger())

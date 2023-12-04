@@ -9,6 +9,8 @@ import (
 
 func RegisterRoutes(e *echo.Echo) {
 
+	// UserNotificationService := services.NewUserNotificationService(rch)
+
 	e.POST("/register", handler.RegisterUser)
 	e.POST("/register/admin", handler.RegisterAdmin)
 	e.POST("/login", handler.LoginUser)
@@ -16,7 +18,7 @@ func RegisterRoutes(e *echo.Echo) {
 	user := e.Group("/user")
 	user.Use(middleware.RequireAuth)
 	{
-		user.GET("/profile", handler.GetUserProfile)
+		user.GET("/profile", handler.GetUserProfile) //ngambil dari parameter id, jadi handler diganti juga
 		user.PUT("/profile/update", handler.UpdateUserProfile)
 		user.GET("/activities", handler.GetUserActivities)
 	}

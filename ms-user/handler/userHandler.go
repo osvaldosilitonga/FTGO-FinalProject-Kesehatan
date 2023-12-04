@@ -108,7 +108,7 @@ func LoginUser(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, map[string]interface{}{"message": "Invalid password"})
 	}
 
-	tokenString, err := middleware.GenerateToken(user.ID, user.Role)
+	tokenString, err := middleware.GenerateToken(user.ID, user.Role, user.Email)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]interface{}{"message": "Failed to generate token"})
 	}
