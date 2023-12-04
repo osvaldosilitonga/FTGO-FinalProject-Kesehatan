@@ -23,3 +23,14 @@ type UserRegister struct {
 	Birthdate string `json:"birthdate"`
 	Gender    string `json:"gender"`
 }
+
+type UserProfileResponse struct {
+	Email     string `json:"email"`
+	Name      string `json:"name"`
+	ID        int    `json:"id"`
+	UserID    int    `json:"user_id"`
+	Address   string `json:"address"`
+	Phone     string `json:"phone"`
+	Birthdate string `json:"birthdate"`
+	Gender    string `json:"gender"`
+}
