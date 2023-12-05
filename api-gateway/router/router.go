@@ -56,7 +56,7 @@ func Router(r *echo.Echo) {
 		order.POST("/cancel/:id", orderController.CancelOrder, middlewares.IsUser)
 
 		// Admin Only
-		// order.GET("", orderController.ListOrder, middlewares.IsAdmin)
+		order.GET("/admin", orderController.ListOrder, middlewares.IsAdmin)
 		// order.GET("/:id", orderController.FindByID, middlewares.IsAdmin)
 		// order.PUT("/confirm/:id", orderController.UpdateOrder, middlewares.IsAdmin)
 	}

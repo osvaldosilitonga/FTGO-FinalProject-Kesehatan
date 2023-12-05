@@ -6,6 +6,8 @@ import (
 	"gateway/models/web"
 	"gateway/service"
 	"gateway/utils"
+	"strconv"
+	"strings"
 
 	pb "gateway/internal/order"
 	pbProduct "gateway/internal/product"
@@ -17,6 +19,7 @@ import (
 type OrderController interface {
 	CreateOrderProduct(c echo.Context) error
 	CancelOrder(c echo.Context) error
+	ListOrder(c echo.Context) error
 }
 
 type OrderControllerImpl struct {
@@ -149,6 +152,34 @@ func (o *OrderControllerImpl) CancelOrder(c echo.Context) error {
 	_, err = o.ProductService.UpdateStock(c.Request().Context(), updateReq)
 	if err != nil {
 		return utils.GrpcError(c, err)
+	}
+
+	return utils.SuccessMessage(c, &utils.ApiOk, res)
+}
+
+func (o *OrderControllerImpl) ListOrder(c echo.Context) error {
+	status := strings.ToUpper(c.QueryParam("status"))
+	page := c.QueryParam("page")
+	if page == "" {
+		page = "1"
+	}
+	pageInt, err := strconv.Atoi(page)
+	if err != nil {
+		return utils.ErrorMessage(c, &utils.ApiBadRequest, err)
+	}
+
+	req := &pb.ListOrderRequest{
+		Status: status,
+		Page:   int32(pageInt),
+	}
+
+	res, err := o.OrderService.ListOrder(c.Request().Context(), req)
+	if err != nil {
+		return utils.GrpcError(c, err)
+	}
+
+	if len(res.Orders) == 0 {
+		return utils.ErrorMessage(c, &utils.ApiNotFound, nil)
 	}
 
 	return utils.SuccessMessage(c, &utils.ApiOk, res)
