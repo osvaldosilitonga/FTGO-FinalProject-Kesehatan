@@ -20,6 +20,8 @@ type OrderController interface {
 	CreateOrderProduct(c echo.Context) error
 	CancelOrder(c echo.Context) error
 	ListOrder(c echo.Context) error
+	OrderDetail(c echo.Context) error
+	ConfirmOrder(c echo.Context) error
 }
 
 type OrderControllerImpl struct {
@@ -180,6 +182,43 @@ func (o *OrderControllerImpl) ListOrder(c echo.Context) error {
 
 	if len(res.Orders) == 0 {
 		return utils.ErrorMessage(c, &utils.ApiNotFound, nil)
+	}
+
+	return utils.SuccessMessage(c, &utils.ApiOk, res)
+}
+
+func (o *OrderControllerImpl) OrderDetail(c echo.Context) error {
+	orderId := c.Param("id")
+	userId := c.Get("id").(int)
+	userRole := c.Get("role").(string)
+
+	req := &pb.FindByOrderIdRequest{
+		OrderId: orderId,
+	}
+
+	res, err := o.OrderService.FindByOrderId(c.Request().Context(), req)
+	if err != nil {
+		return utils.GrpcError(c, err)
+	}
+
+	if int(res.UserId) != userId && userRole != "admin" {
+		return utils.ErrorMessage(c, &utils.ApiForbidden, nil)
+	}
+
+	return utils.SuccessMessage(c, &utils.ApiOk, res)
+}
+
+func (o *OrderControllerImpl) ConfirmOrder(c echo.Context) error {
+	orderId := c.Param("id")
+
+	req := &pb.UpdateOrderStatusRequest{
+		OrderId: orderId,
+		Status:  "SUCCESS",
+	}
+
+	res, err := o.OrderService.UpdateStatus(c.Request().Context(), req)
+	if err != nil {
+		return utils.GrpcError(c, err)
 	}
 
 	return utils.SuccessMessage(c, &utils.ApiOk, res)

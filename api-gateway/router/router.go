@@ -55,10 +55,12 @@ func Router(r *echo.Echo) {
 		order.POST("", orderController.CreateOrderProduct, middlewares.IsUser)
 		order.POST("/cancel/:id", orderController.CancelOrder, middlewares.IsUser)
 
+		// Owner and Admin/
+		order.GET("/:id", orderController.OrderDetail)
+
 		// Admin Only
 		order.GET("/admin", orderController.ListOrder, middlewares.IsAdmin)
-		// order.GET("/:id", orderController.FindByID, middlewares.IsAdmin)
-		// order.PUT("/confirm/:id", orderController.UpdateOrder, middlewares.IsAdmin)
+		order.PUT("/admin/confirm/:id", orderController.ConfirmOrder, middlewares.IsAdmin)
 	}
 
 	// payment := v1.Group("/payment")
