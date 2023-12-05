@@ -102,7 +102,49 @@ func (o *Order) UpdateStatus(ctx context.Context, req *orderPb.UpdateOrderStatus
 		return nil, status.Error(codes.NotFound, err.Error())
 	}
 
+	// check status
+	if err := helper.StatusCheck(order.Status, req.Status); err != nil {
+		return nil, err
+	}
+
 	order.Status = strings.ToUpper(req.Status)
+	order.UpdatedAt = time.Now().UnixMilli()
+
+	err = o.orderRepo.Update(ctx, order)
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	response := helper.ToOrderResponse(order)
+
+	return response, nil
+}
+
+func (o *Order) Cancel(ctx context.Context, req *orderPb.CancelOrderRequest) (*orderPb.Order, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	orderId, err := primitive.ObjectIDFromHex(req.OrderId)
+	if err != nil {
+		return nil, status.Error(codes.InvalidArgument, err.Error())
+	}
+
+	order, err := o.orderRepo.FindById(ctx, orderId)
+	if err != nil {
+		return nil, status.Error(codes.NotFound, err.Error())
+	}
+
+	if order.Status == "CANCEL" {
+		return nil, status.Error(codes.InvalidArgument, "order already canceled")
+	}
+	if order.Status == "PAID" {
+		return nil, status.Error(codes.InvalidArgument, "order already paid")
+	}
+	if order.Status == "SUCCESS" {
+		return nil, status.Error(codes.InvalidArgument, "order already success")
+	}
+
+	order.Status = "CANCEL"
 	order.UpdatedAt = time.Now().UnixMilli()
 
 	err = o.orderRepo.Update(ctx, order)
