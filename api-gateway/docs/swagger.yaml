@@ -1,5 +1,20 @@
 basePath: /api/v1
 definitions:
+  product.UpdateProductRequest:
+    properties:
+      category:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      price:
+        type: integer
+      stock:
+        type: integer
+    type: object
   web.CreateOrderProductRequest:
     properties:
       products:
@@ -29,6 +44,27 @@ definitions:
         type: string
       status:
         type: string
+    type: object
+  web.CreateProductRequest:
+    properties:
+      category:
+        type: string
+      description:
+        type: string
+      name:
+        type: string
+      price:
+        minimum: 1000
+        type: integer
+      stock:
+        minimum: 1
+        type: integer
+    required:
+    - category
+    - description
+    - name
+    - price
+    - stock
     type: object
   web.ErrWebResponse:
     properties:
@@ -83,6 +119,153 @@ definitions:
       data:
         $ref: '#/definitions/web.CreateOrderResponseData'
       status:
+        type: string
+    type: object
+  web.SwProduct:
+    properties:
+      category:
+        type: string
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      price:
+        type: integer
+      stock:
+        type: integer
+      updated_at:
+        type: string
+    type: object
+  web.SwProductCreate:
+    properties:
+      code:
+        type: integer
+      data:
+        $ref: '#/definitions/web.SwProductCreateData'
+      status:
+        type: string
+    type: object
+  web.SwProductCreateData:
+    properties:
+      category:
+        type: string
+      createdAt:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      price:
+        type: integer
+      stock:
+        type: integer
+      updatedAt:
+        type: string
+    type: object
+  web.SwProductDelete:
+    properties:
+      code:
+        type: integer
+      data:
+        $ref: '#/definitions/web.SwProductDeleteData'
+      status:
+        type: string
+    type: object
+  web.SwProductDeleteData:
+    properties:
+      category:
+        type: string
+      createdAt:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      price:
+        type: integer
+      stock:
+        type: integer
+      updatedAt:
+        type: string
+    type: object
+  web.SwProductFindById:
+    properties:
+      code:
+        type: integer
+      data:
+        $ref: '#/definitions/web.SwProductFindByIdData'
+      status:
+        type: string
+    type: object
+  web.SwProductFindByIdData:
+    properties:
+      category:
+        type: string
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      price:
+        type: integer
+      stock:
+        type: integer
+      updated_at:
+        type: string
+    type: object
+  web.SwProductList:
+    properties:
+      code:
+        type: integer
+      data:
+        $ref: '#/definitions/web.SwProductListData'
+      status:
+        type: string
+    type: object
+  web.SwProductListData:
+    properties:
+      products:
+        items:
+          $ref: '#/definitions/web.SwProduct'
+        type: array
+    type: object
+  web.SwProductUpdate:
+    properties:
+      code:
+        type: integer
+      data:
+        $ref: '#/definitions/web.SwProductUpdateData'
+      status:
+        type: string
+    type: object
+  web.SwProductUpdateData:
+    properties:
+      category:
+        type: string
+      createdAt:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      price:
+        type: integer
+      stock:
+        type: integer
+      updatedAt:
         type: string
     type: object
   web.SwUserLogin:
@@ -429,6 +612,192 @@ paths:
       summary: Cancel order (Customer Only)
       tags:
       - Order
+  /products:
+    get:
+      consumes:
+      - application/json
+      description: List Product
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/web.SwProductList'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/web.ErrWebResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/web.ErrWebResponse'
+      summary: List Product
+      tags:
+      - Product
+    post:
+      consumes:
+      - application/json
+      description: Create new product
+      parameters:
+      - description: JWT Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Product Data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/web.CreateProductRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/web.SwProductCreate'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/web.ErrWebResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/web.ErrWebResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/web.ErrWebResponse'
+      summary: Create Product (Admin Only)
+      tags:
+      - Product
+  /products/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete product by ID
+      parameters:
+      - description: JWT Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Product ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/web.SwProductDelete'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/web.ErrWebResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/web.ErrWebResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/web.ErrWebResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/web.ErrWebResponse'
+      summary: Delete Product (Admin Only)
+      tags:
+      - Product
+    get:
+      consumes:
+      - application/json
+      description: Get product by ID
+      parameters:
+      - description: Product ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/web.SwProductFindById'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/web.ErrWebResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/web.ErrWebResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/web.ErrWebResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/web.ErrWebResponse'
+      summary: Product Detail
+      tags:
+      - Product
+    put:
+      consumes:
+      - application/json
+      description: Update product by ID
+      parameters:
+      - description: JWT Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Product ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Product Data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/product.UpdateProductRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/web.SwProductUpdate'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/web.ErrWebResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/web.ErrWebResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/web.ErrWebResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/web.ErrWebResponse'
+      summary: Update Product (Admin Only)
+      tags:
+      - Product
   /user/login:
     post:
       consumes:

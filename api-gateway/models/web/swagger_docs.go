@@ -112,3 +112,93 @@ type UserProfileData struct {
 	BirthDate string `json:"birth_date"`
 	Gender    string `json:"gender"`
 }
+
+// -----------------------------------------------
+type SwProductList struct {
+	Code   int               `json:"code"`
+	Status string            `json:"status"`
+	Data   SwProductListData `json:"data"`
+}
+type SwProductListData struct {
+	Products []SwProduct `json:"products"`
+}
+
+type SwProduct struct {
+	Id          string `json:"id"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	Category    string `json:"category"`
+	Price       int    `json:"price"`
+	Stock       int    `json:"stock"`
+	CreatedAt   string `json:"created_at"`
+	UpdatedAt   string `json:"updated_at"`
+}
+
+// -----------------------------------------------
+type SwProductFindById struct {
+	Code   int                   `json:"code"`
+	Status string                `json:"status"`
+	Data   SwProductFindByIdData `json:"data"`
+}
+type SwProductFindByIdData struct {
+	Id          string `json:"id"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	Category    string `json:"category"`
+	Price       int    `json:"price"`
+	Stock       int    `json:"stock"`
+	CreatedAt   string `json:"created_at"`
+	UpdatedAt   string `json:"updated_at"`
+}
+
+// -----------------------------------------------
+
+type SwProductUpdate struct {
+	Code   int                 `json:"code"`
+	Status string              `json:"status"`
+	Data   SwProductUpdateData `json:"data"`
+}
+type SwProductUpdateData struct {
+	Id          string `json:"id"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	Category    string `json:"category"`
+	Price       int    `json:"price"`
+	Stock       int    `json:"stock"`
+	CreatedAt   string `json:"createdAt"`
+	UpdatedAt   string `json:"updatedAt"`
+}
+
+// -----------------------------------------------
+type SwProductDelete struct {
+	Code   int                 `json:"code"`
+	Status string              `json:"status"`
+	Data   SwProductDeleteData `json:"data"`
+}
+type SwProductDeleteData struct {
+	Id          string `json:"id"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	Category    string `json:"category"`
+	Price       int    `json:"price"`
+	Stock       int    `json:"stock"`
+	CreatedAt   string `json:"createdAt"`
+	UpdatedAt   string `json:"updatedAt"`
+}
+
+// -----------------------------------------------
+type SwProductCreate struct {
+	Code   int                 `json:"code"`
+	Status string              `json:"status"`
+	Data   SwProductCreateData `json:"data"`
+}
+type SwProductCreateData struct {
+	Id          string `json:"id"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	Category    string `json:"category"`
+	Price       int    `json:"price"`
+	Stock       int    `json:"stock"`
+	CreatedAt   string `json:"createdAt"`
+	UpdatedAt   string `json:"updatedAt"`
+}
