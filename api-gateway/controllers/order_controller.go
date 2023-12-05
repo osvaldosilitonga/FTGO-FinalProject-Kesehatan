@@ -15,6 +15,7 @@ import (
 
 type OrderController interface {
 	CreateOrderProduct(c echo.Context) error
+	CancelOrder(c echo.Context) error
 }
 
 type OrderControllerImpl struct {
@@ -80,4 +81,35 @@ func (o *OrderControllerImpl) CreateOrderProduct(c echo.Context) error {
 	}
 
 	return utils.SuccessMessage(c, &utils.ApiCreate, resp)
+}
+
+func (o *OrderControllerImpl) CancelOrder(c echo.Context) error {
+	userId := c.Get("id").(int)
+	orderId := c.Param("id")
+
+	req := &pb.FindByOrderIdRequest{
+		OrderId: orderId,
+	}
+
+	// Find order by order id
+	res, err := o.OrderService.FindByOrderId(c.Request().Context(), req)
+	if err != nil {
+		return utils.GrpcError(c, err)
+	}
+
+	// Check if user is the owner of the order
+	if int(res.UserId) != userId {
+		return utils.ErrorMessage(c, &utils.ApiForbidden, nil)
+	}
+
+	// Cancel order
+	res, err = o.OrderService.UpdateStatus(c.Request().Context(), &pb.UpdateOrderStatusRequest{
+		OrderId: orderId,
+		Status:  "CANCEL",
+	})
+	if err != nil {
+		return utils.GrpcError(c, err)
+	}
+
+	return utils.SuccessMessage(c, &utils.ApiOk, res)
 }

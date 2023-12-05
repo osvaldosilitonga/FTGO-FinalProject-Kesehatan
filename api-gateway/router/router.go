@@ -42,6 +42,7 @@ func Router(r *echo.Echo) {
 		user.POST("/register", userController.Register)
 		user.POST("/register/admin", userController.RegisterAdmin)
 
+		// User and Admin
 		user.PUT("/profile/:id", userController.UpdateUserProfile, middlewares.RequireAuth)
 		user.GET("/profile/:id", userController.GetUserProfile, middlewares.RequireAuth)
 	}
@@ -50,7 +51,9 @@ func Router(r *echo.Echo) {
 	orderController := controllers.NewOrderController(orderService, paymentService)
 	order.Use(middlewares.RequireAuth)
 	{
+		// User Only
 		order.POST("", orderController.CreateOrderProduct, middlewares.IsUser)
+		order.POST("/cancel/:id", orderController.CancelOrder, middlewares.IsUser)
 	}
 
 	// payment := v1.Group("/payment")

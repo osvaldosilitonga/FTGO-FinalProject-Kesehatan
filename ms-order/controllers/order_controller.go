@@ -156,3 +156,22 @@ func (o *Order) Cancel(ctx context.Context, req *orderPb.CancelOrderRequest) (*o
 
 	return response, nil
 }
+
+func (o *Order) FindByOrderId(ctx context.Context, req *orderPb.FindByOrderIdRequest) (*orderPb.Order, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	orderId, err := primitive.ObjectIDFromHex(req.OrderId)
+	if err != nil {
+		return nil, status.Error(codes.InvalidArgument, err.Error())
+	}
+
+	order, err := o.orderRepo.FindById(ctx, orderId)
+	if err != nil {
+		return nil, status.Error(codes.NotFound, err.Error())
+	}
+
+	response := helper.ToOrderResponse(order)
+
+	return response, nil
+}
