@@ -54,3 +54,61 @@ type SwOrderConfirm struct {
 	Status string                  `json:"status"`
 	Data   CreateOrderResponseData `json:"data"`
 }
+
+// -----------------------------------------------
+type SwUserLogin struct {
+	Code   int             `json:"code"`
+	Status string          `json:"status"`
+	Data   SwUserLoginData `json:"data"`
+}
+
+type SwUserLoginData struct {
+	Token string `json:"token"`
+}
+
+// -----------------------------------------------
+type SwUserRegister struct {
+	Code   int                `json:"code"`
+	Status string             `json:"status"`
+	Data   SwUserRegisterData `json:"data"`
+}
+type SwUserRegisterData struct {
+	Id        int    `json:"id"`
+	Name      string `json:"name"`
+	Email     string `json:"email"`
+	CreatedAt string `json:"created_at"`
+}
+
+// -----------------------------------------------
+type SwUserProfile struct {
+	Code   int               `json:"code"`
+	Status string            `json:"status"`
+	Data   SwUserProfileData `json:"data"`
+}
+type SwUserProfileData struct {
+	UserID    int    `json:"user_id"`
+	Address   string `json:"address"`
+	Phone     string `json:"phone"`
+	BirthDate string `json:"birth_date"`
+	Gender    string `json:"gender"`
+	Email     string `json:"email"`
+	Name      string `json:"name"`
+}
+
+// -----------------------------------------------
+type SwUserProfileUpdate struct {
+	Code   int                     `json:"code"`
+	Status string                  `json:"status"`
+	Data   SwUserProfileDataUpdate `json:"data"`
+}
+type SwUserProfileDataUpdate struct {
+	UserProfile string `json:"user_profile"`
+}
+
+type UserProfileData struct {
+	UserID    int    `json:"user_id"`
+	Address   string `json:"address"`
+	Phone     string `json:"phone"`
+	BirthDate string `json:"birth_date"`
+	Gender    string `json:"gender"`
+}

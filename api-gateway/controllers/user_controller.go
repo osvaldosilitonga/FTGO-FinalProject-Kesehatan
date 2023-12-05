@@ -35,6 +35,16 @@ func NewUserController(us service.User, rc *redis.Client) User {
 	}
 }
 
+// @Summary 	Login
+// @Description Login
+// @Tags 			User
+// @Accept 		json
+// @Produce 	json
+// @Param 		data body web.UsersLoginRequest true "User Credentials"
+// @Success 	200 {object} web.SwUserLogin
+// @Failure 	400 {object} web.ErrWebResponse
+// @Failure 	500 {object} web.ErrWebResponse
+// @Router 		/user/login [post]
 func (u *UserImpl) Login(c echo.Context) error {
 	req := web.UsersLoginRequest{}
 	if err := c.Bind(&req); err != nil {
@@ -79,6 +89,16 @@ func (u *UserImpl) Login(c echo.Context) error {
 	return utils.SuccessMessage(c, &utils.ApiOk, response)
 }
 
+// @Summary 	Register
+// @Description Register new user
+// @Tags 			User
+// @Accept 		json
+// @Produce 	json
+// @Param 		data body web.UsersRegisterRequest true "User Data"
+// @Success 	201 {object} web.SwUserRegister
+// @Failure 	400 {object} web.ErrWebResponse
+// @Failure 	500 {object} web.ErrWebResponse
+// @Router 		/user/register [post]
 func (u *UserImpl) Register(c echo.Context) error {
 	req := web.UsersRegisterRequest{}
 	if err := c.Bind(&req); err != nil {
@@ -103,9 +123,19 @@ func (u *UserImpl) Register(c echo.Context) error {
 		Email:     resp.User.Email,
 		CreatedAt: resp.User.CreatedAt,
 	}
-	return utils.SuccessMessage(c, &utils.ApiOk, response)
+	return utils.SuccessMessage(c, &utils.ApiCreate, response)
 }
 
+// @Summary 	Register Admin
+// @Description Register for admin
+// @Tags 			User
+// @Accept 		json
+// @Produce 	json
+// @Param 		data body web.UsersRegisterRequest true "Admin Data"
+// @Success 	201 {object} web.SwUserRegister
+// @Failure 	400 {object} web.ErrWebResponse
+// @Failure 	500 {object} web.ErrWebResponse
+// @Router 		/user/register/admin [post]
 func (u *UserImpl) RegisterAdmin(c echo.Context) error {
 	req := web.UsersRegisterRequest{}
 	if err := c.Bind(&req); err != nil {
@@ -133,6 +163,18 @@ func (u *UserImpl) RegisterAdmin(c echo.Context) error {
 	return utils.SuccessMessage(c, &utils.ApiOk, response)
 }
 
+// @Summary 	Profile (Owner Only)
+// @Description Get user profile
+// @Tags 			User
+// @Accept 		json
+// @Produce 	json
+// @Param        Authorization header string true "JWT Token"
+// @Param 			id path integer true "User ID"
+// @Success 	200 {object} web.SwUserProfile
+// @Failure 	400 {object} web.ErrWebResponse
+// @Failure 	401 {object} web.ErrWebResponse
+// @Failure 	500 {object} web.ErrWebResponse
+// @Router 		/user/profile/{id} [get]
 func (u *UserImpl) GetUserProfile(c echo.Context) error {
 	param := c.Param("id")
 	paramID, err := strconv.Atoi(param)
@@ -158,6 +200,19 @@ func (u *UserImpl) GetUserProfile(c echo.Context) error {
 	return utils.SuccessMessage(c, &utils.ApiOk, resp)
 }
 
+// @Summary 	Update Profile (Owner Only)
+// @Description Update user profile
+// @Tags 			User
+// @Accept 		json
+// @Produce 	json
+// @Param        Authorization header string true "JWT Token"
+// @Param 			id path integer true "User ID"
+// @Param 		data body web.UsersUpdateProfileRequest true "User Data"
+// @Success 	200 {object} web.SwUserProfileUpdate
+// @Failure 	400 {object} web.ErrWebResponse
+// @Failure 	401 {object} web.ErrWebResponse
+// @Failure 	500 {object} web.ErrWebResponse
+// @Router 		/user/profile/{id} [put]
 func (u *UserImpl) UpdateUserProfile(c echo.Context) error {
 	param := c.Param("id")
 	paramID, err := strconv.Atoi(param)
