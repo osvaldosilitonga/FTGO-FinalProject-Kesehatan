@@ -11,7 +11,7 @@ service OrderService {
     rpc UpdateStatus(UpdateOrderStatusRequest) returns (Order) {}
     rpc Cancel(CancelOrderRequest) returns (Order) {}
     rpc FindByOrderId(FindByOrderIdRequest) returns (Order) {}
-    // rpc FindByUserId(FindByUserIdRequest) returns (Order) {}
+    rpc ListOrder(ListOrderRequest) returns (ListOrderResponse) {}
 }
 
 message Empty{}
@@ -55,4 +55,14 @@ message CancelOrderRequest {
 
 message FindByOrderIdRequest {
     string order_id = 1;
+}
+
+message ListOrderRequest {
+    string status = 2;
+    int32 page = 3;
+}
+
+// Response
+message ListOrderResponse {
+    repeated Order orders = 1;
 }

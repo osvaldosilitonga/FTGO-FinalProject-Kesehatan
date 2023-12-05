@@ -8,12 +8,14 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type OrderRepository interface {
 	Save(ctx context.Context, data *entity.Orders) (*entity.Orders, error)
 	FindById(ctx context.Context, id primitive.ObjectID) (*entity.Orders, error)
 	Update(ctx context.Context, data *entity.Orders) error
+	FindAll(ctx context.Context, page int, status string) ([]*entity.Orders, error)
 }
 
 type OrderRepositoryImpl struct {
@@ -68,4 +70,42 @@ func (o *OrderRepositoryImpl) FindById(ctx context.Context, id primitive.ObjectI
 	}
 
 	return &order, nil
+}
+
+func (o *OrderRepositoryImpl) FindAll(ctx context.Context, page int, status string) ([]*entity.Orders, error) {
+	var orders []*entity.Orders
+
+	if page < 1 {
+		page = 1
+	}
+
+	skip := int64((page - 1) * 10)
+	limit := int64(10)
+
+	filter := bson.M{}
+	if status != "" {
+		filter = bson.M{
+			"status": status,
+		}
+	}
+
+	opts := options.FindOptions{
+		Skip:  &skip,
+		Limit: &limit,
+		Sort: bson.M{
+			"updated_at": -1,
+		},
+	}
+
+	cursor, err := o.dbCollection.Find(ctx, filter, &opts)
+	if err != nil {
+		return nil, err
+	}
+
+	err = cursor.All(ctx, &orders)
+	if err != nil {
+		return nil, err
+	}
+
+	return orders, nil
 }
