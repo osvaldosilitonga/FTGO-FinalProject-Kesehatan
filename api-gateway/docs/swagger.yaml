@@ -315,6 +315,10 @@ paths:
         in: query
         name: page
         type: integer
+      - description: status
+        in: query
+        name: status
+        type: string
       produces:
       - application/json
       responses:

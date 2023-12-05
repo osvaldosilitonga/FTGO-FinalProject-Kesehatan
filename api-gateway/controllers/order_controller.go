@@ -191,6 +191,7 @@ func (o *OrderControllerImpl) CancelOrder(c echo.Context) error {
 // @Produce 	json
 // @Param        Authorization header string true "JWT Token"
 // @Param        page    query     integer  false  "Page"
+// @Param        status    query     string  false  "status"
 // @Success 	200 {object} web.SwOrderDetail
 // @Failure 	400 {object} web.ErrWebResponse
 // @Failure 	401 {object} web.ErrWebResponse
