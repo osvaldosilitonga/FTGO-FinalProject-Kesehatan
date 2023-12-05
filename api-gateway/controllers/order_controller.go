@@ -76,11 +76,30 @@ func (o *OrderControllerImpl) CreateOrderProduct(c echo.Context) error {
 		Description: "Payment for product orders",
 	}
 
+	// Create payment
 	resp, code, err := o.PaymentService.CreatePayment(paymentRequest)
 	for err != nil || code != 201 {
 		fmt.Println("Payment service error, retrying...")
 
 		resp, code, err = o.PaymentService.CreatePayment(paymentRequest)
+	}
+
+	// Update product stock
+	updateReq := &pbProduct.UpdateStockRequest{
+		Type: "decrease",
+	}
+	for _, product := range res.Products {
+		d := &pbProduct.Data{
+			Id:       product.Id,
+			Quantity: product.Qty,
+		}
+
+		updateReq.Datas = append(updateReq.Datas, d)
+	}
+
+	_, err = o.ProductService.UpdateStock(c.Request().Context(), updateReq)
+	if err != nil {
+		return utils.GrpcError(c, err)
 	}
 
 	return utils.SuccessMessage(c, &utils.ApiCreate, resp)
