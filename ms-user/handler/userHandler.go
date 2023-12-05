@@ -26,6 +26,16 @@ func NewUserHandler(rc *amqp.Channel) UserHandler {
 	return &UserHandlerImpl{}
 }
 
+// @Summary Register a user
+// @Description Register a new user as a regular user
+// @Tags User
+// @Accept json
+// @Produce json
+// @Param input body dto.UserRegisterRequest true "User registration details"
+// @Success 201 {object} map[string]interface{} "Registration successful"
+// @Failure 400 {object} map[string]interface{} "Invalid request data"
+// @Failure 500 {object} map[string]interface{} "Failed to register user or create user profile"
+// @Router /register [post]
 func (u *UserHandlerImpl) RegisterUser(c echo.Context) error {
 	input := dto.UserRegisterRequest{}
 	if err := c.Bind(&input); err != nil {
