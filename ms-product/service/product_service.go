@@ -8,6 +8,7 @@ import (
 	"product/helper"
 	pb "product/internal/product"
 	"strconv"
+	"strings"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -225,4 +226,55 @@ func (p *Product) CheckProductExist(ctx context.Context, req *pb.CheckProductExi
 	}
 
 	return new(emptypb.Empty), nil
+}
+
+func (p *Product) UpdateStock(ctx context.Context, req *pb.UpdateStockRequest) (*pb.ListProductResponse, error) {
+	t := strings.ToLower(req.Type)
+	if t != "increase" && t != "decrease" {
+		return nil, status.Error(codes.InvalidArgument, "invalid type")
+	}
+
+	product := pb.ListProductResponse{}
+
+	for _, data := range req.Datas {
+		id, err := primitive.ObjectIDFromHex(data.Id)
+		if err != nil {
+			return nil, status.Error(codes.InvalidArgument, err.Error())
+		}
+
+		productDetails := &entity.Products{}
+		filter := bson.M{"_id": id}
+		err = p.dbCollection.FindOne(ctx, filter).Decode(&productDetails)
+		if err == mongo.ErrNoDocuments {
+			return nil, status.Error(codes.NotFound, fmt.Sprintf("product with id: %s, not found", data.Id))
+		}
+		if err != nil {
+			return nil, status.Error(codes.Internal, err.Error())
+		}
+
+		switch t {
+		case "increase":
+			productDetails.Stock += data.Quantity
+		case "decrease":
+			productDetails.Stock -= data.Quantity
+		}
+
+		if productDetails.Stock < 0 {
+			return nil, status.Error(codes.InvalidArgument, fmt.Sprintf("product with id: '%s', out of stock", data.Id))
+		}
+
+		productDetails.UpdatedAt = strconv.Itoa(int(time.Now().UnixMilli()))
+
+		_, err = p.dbCollection.UpdateOne(ctx, filter, bson.M{"$set": bson.M{
+			"stock":      productDetails.Stock,
+			"updated_at": productDetails.UpdatedAt,
+		}})
+		if err != nil {
+			return nil, status.Error(codes.Internal, err.Error())
+		}
+
+		product.Products = append(product.Products, helper.ToProductResponse(productDetails))
+	}
+
+	return &product, nil
 }

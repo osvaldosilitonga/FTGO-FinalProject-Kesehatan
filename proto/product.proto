@@ -13,6 +13,7 @@ service ProductService {
     rpc DeleteProduct(DeleteProductRequest) returns (Product);
     rpc ListProduct(Empty) returns (ListProductResponse);
     rpc CheckStock(CheckStockRequest) returns (ListProductResponse);
+    rpc UpdateStock(UpdateStockRequest) returns (ListProductResponse);
     rpc CheckProductExist(CheckProductExistRequest) returns (google.protobuf.Empty);
 }
 
@@ -66,6 +67,11 @@ message CheckStockRequest {
 
 message CheckProductExistRequest {
     repeated string datas = 1;
+}
+
+message UpdateStockRequest {
+    string type = 1;
+    repeated Data datas = 2;
 }
 
 // Response
