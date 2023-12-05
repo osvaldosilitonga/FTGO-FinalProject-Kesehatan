@@ -48,7 +48,7 @@ func Router(r *echo.Echo) {
 	}
 
 	order := v1.Group("/order")
-	orderController := controllers.NewOrderController(orderService, paymentService)
+	orderController := controllers.NewOrderController(orderService, paymentService, productService)
 	order.Use(middlewares.RequireAuth)
 	{
 		// User Only

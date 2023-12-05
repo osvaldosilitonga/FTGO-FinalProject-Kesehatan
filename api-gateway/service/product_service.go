@@ -21,6 +21,7 @@ type Product interface {
 	DeleteProduct(ctx context.Context, req *pb.DeleteProductRequest) (*pb.Product, error)
 	CheckStock(ctx context.Context, req *pb.CheckStockRequest) (*pb.ListProductResponse, error)
 	CheckProductExist(ctx context.Context, req *pb.CheckProductExistRequest) (*emptypb.Empty, error)
+	UpdateStock(ctx context.Context, req *pb.UpdateStockRequest) (*pb.ListProductResponse, error)
 }
 
 type ProductImpl struct {
@@ -119,6 +120,18 @@ func (p *ProductImpl) CheckProductExist(ctx context.Context, req *pb.CheckProduc
 	product, err := productClient.CheckProductExist(ctx, req)
 	if err != nil {
 		log.Printf("Error from check product exist service, err: %v\n", err)
+		return nil, err
+	}
+
+	return product, nil
+}
+
+func (p *ProductImpl) UpdateStock(ctx context.Context, req *pb.UpdateStockRequest) (*pb.ListProductResponse, error) {
+	productClient := pb.NewProductServiceClient(p.Conn)
+
+	product, err := productClient.UpdateStock(ctx, req)
+	if err != nil {
+		log.Printf("Error from update stock service, err: %v\n", err)
 		return nil, err
 	}
 

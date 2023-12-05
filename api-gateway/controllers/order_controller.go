@@ -8,6 +8,7 @@ import (
 	"gateway/utils"
 
 	pb "gateway/internal/order"
+	pbProduct "gateway/internal/product"
 
 	"github.com/labstack/echo/v4"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -21,12 +22,14 @@ type OrderController interface {
 type OrderControllerImpl struct {
 	OrderService   service.Order
 	PaymentService service.Payment
+	ProductService service.Product
 }
 
-func NewOrderController(so service.Order, ps service.Payment) OrderController {
+func NewOrderController(so service.Order, ps service.Payment, prs service.Product) OrderController {
 	return &OrderControllerImpl{
 		OrderService:   so,
 		PaymentService: ps,
+		ProductService: prs,
 	}
 }
 
@@ -107,6 +110,24 @@ func (o *OrderControllerImpl) CancelOrder(c echo.Context) error {
 		OrderId: orderId,
 		Status:  "CANCEL",
 	})
+	if err != nil {
+		return utils.GrpcError(c, err)
+	}
+
+	// Update product stock
+	updateReq := &pbProduct.UpdateStockRequest{
+		Type: "increase",
+	}
+	for _, product := range res.Products {
+		d := &pbProduct.Data{
+			Id:       product.Id,
+			Quantity: product.Qty,
+		}
+
+		updateReq.Datas = append(updateReq.Datas, d)
+	}
+
+	_, err = o.ProductService.UpdateStock(c.Request().Context(), updateReq)
 	if err != nil {
 		return utils.GrpcError(c, err)
 	}
