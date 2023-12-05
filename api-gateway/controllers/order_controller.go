@@ -38,6 +38,18 @@ func NewOrderController(so service.Order, ps service.Payment, prs service.Produc
 	}
 }
 
+// @Summary 	Create order (Customer Only)
+// @Description Create a new order for customer. Need to login first
+// @Tags 			Order
+// @Accept 		json
+// @Produce 	json
+// @Param        Authorization header string true "JWT Token"
+// @Param 		createOrder body web.CreateOrderProductRequest true "Order details"
+// @Success 	201 {object} web.SwCreateOrder
+// @Failure 	400 {object} web.ErrWebResponse
+// @Failure 	401 {object} web.ErrWebResponse
+// @Failure 	500 {object} web.ErrWebResponse
+// @Router 		/order [post]
 func (o *OrderControllerImpl) CreateOrderProduct(c echo.Context) error {
 	id := c.Get("id").(int)
 
@@ -110,6 +122,19 @@ func (o *OrderControllerImpl) CreateOrderProduct(c echo.Context) error {
 	return utils.SuccessMessage(c, &utils.ApiCreate, resp)
 }
 
+// @Summary 	Cancel order (Customer Only)
+// @Description Canceling customer order. Need to login first
+// @Tags 			Order
+// @Accept 		json
+// @Produce 	json
+// @Param        Authorization header string true "JWT Token"
+// @Param 			id path string true "Order ID"
+// @Success 	200 {object} web.SwCancelOrder
+// @Failure 	400 {object} web.ErrWebResponse
+// @Failure 	401 {object} web.ErrWebResponse
+// @Failure 	404 {object} web.ErrWebResponse
+// @Failure 	500 {object} web.ErrWebResponse
+// @Router 		/order/cancel/{id} [post]
 func (o *OrderControllerImpl) CancelOrder(c echo.Context) error {
 	userId := c.Get("id").(int)
 	orderId := c.Param("id")
@@ -159,6 +184,19 @@ func (o *OrderControllerImpl) CancelOrder(c echo.Context) error {
 	return utils.SuccessMessage(c, &utils.ApiOk, res)
 }
 
+// @Summary 	List all order (Admin Only)
+// @Description List of all customer orders
+// @Tags 			Order
+// @Accept 		json
+// @Produce 	json
+// @Param        Authorization header string true "JWT Token"
+// @Param        page    query     integer  false  "Page"
+// @Success 	200 {object} web.SwOrderDetail
+// @Failure 	400 {object} web.ErrWebResponse
+// @Failure 	401 {object} web.ErrWebResponse
+// @Failure 	404 {object} web.ErrWebResponse
+// @Failure 	500 {object} web.ErrWebResponse
+// @Router 		/order/admin [get]
 func (o *OrderControllerImpl) ListOrder(c echo.Context) error {
 	status := strings.ToUpper(c.QueryParam("status"))
 	page := c.QueryParam("page")
@@ -187,6 +225,19 @@ func (o *OrderControllerImpl) ListOrder(c echo.Context) error {
 	return utils.SuccessMessage(c, &utils.ApiOk, res)
 }
 
+// @Summary 	Order Detail (Customer and Admin)
+// @Description Get order detail by id. Need to login first
+// @Tags 			Order
+// @Accept 		json
+// @Produce 	json
+// @Param        Authorization header string true "JWT Token"
+// @Param 			id path string true "Order ID"
+// @Success 	200 {object} web.SwOrderDetail
+// @Failure 	400 {object} web.ErrWebResponse
+// @Failure 	401 {object} web.ErrWebResponse
+// @Failure 	404 {object} web.ErrWebResponse
+// @Failure 	500 {object} web.ErrWebResponse
+// @Router 		/order/{id} [get]
 func (o *OrderControllerImpl) OrderDetail(c echo.Context) error {
 	orderId := c.Param("id")
 	userId := c.Get("id").(int)
@@ -208,6 +259,19 @@ func (o *OrderControllerImpl) OrderDetail(c echo.Context) error {
 	return utils.SuccessMessage(c, &utils.ApiOk, res)
 }
 
+// @Summary 	Confirm Order (Admin Only)
+// @Description Confirm the order to be completed.
+// @Tags 			Order
+// @Accept 		json
+// @Produce 	json
+// @Param        Authorization header string true "JWT Token"
+// @Param 			id path string true "Order ID"
+// @Success 	200 {object} web.SwOrderConfirm
+// @Failure 	400 {object} web.ErrWebResponse
+// @Failure 	401 {object} web.ErrWebResponse
+// @Failure 	404 {object} web.ErrWebResponse
+// @Failure 	500 {object} web.ErrWebResponse
+// @Router 		/order/admin/confirm/{id} [put]
 func (o *OrderControllerImpl) ConfirmOrder(c echo.Context) error {
 	orderId := c.Param("id")
 

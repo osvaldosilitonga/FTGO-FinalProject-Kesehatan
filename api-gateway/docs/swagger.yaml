@@ -1,0 +1,307 @@
+basePath: /api/v1
+definitions:
+  web.CreateOrderProductRequest:
+    properties:
+      products:
+        items:
+          $ref: '#/definitions/web.ProductDatas'
+        type: array
+    required:
+    - products
+    type: object
+  web.CreateOrderResponseData:
+    properties:
+      amount:
+        type: integer
+      created:
+        type: string
+      description:
+        type: string
+      expairy_date:
+        type: string
+      external_id:
+        type: string
+      invoice_id:
+        type: string
+      invoice_url:
+        type: string
+      payment_email:
+        type: string
+      status:
+        type: string
+    type: object
+  web.ErrWebResponse:
+    properties:
+      code:
+        type: integer
+      detail: {}
+      status:
+        type: string
+    type: object
+  web.ProductDatas:
+    properties:
+      id:
+        type: string
+      qty:
+        minimum: 1
+        type: integer
+    required:
+    - id
+    - qty
+    type: object
+  web.SwCancelOrder:
+    properties:
+      code:
+        type: integer
+      data:
+        $ref: '#/definitions/web.CreateOrderResponseData'
+      status:
+        type: string
+    type: object
+  web.SwCreateOrder:
+    properties:
+      code:
+        type: integer
+      data:
+        $ref: '#/definitions/web.CreateOrderResponseData'
+      status:
+        type: string
+    type: object
+  web.SwOrderConfirm:
+    properties:
+      code:
+        type: integer
+      data:
+        $ref: '#/definitions/web.CreateOrderResponseData'
+      status:
+        type: string
+    type: object
+  web.SwOrderDetail:
+    properties:
+      code:
+        type: integer
+      data:
+        $ref: '#/definitions/web.CreateOrderResponseData'
+      status:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: wellnesslink.ot@gmail.com
+    name: WellnessLink
+    url: www.welnesslink.com
+  description: The Health and Pharmaceutical Sales API provides an integrated solution
+    for health and drug sales business systems.
+  license:
+    name: Apache 2.0
+  title: WellnessLink by Cap-OT - API Documentation
+  version: BETA
+paths:
+  /order:
+    post:
+      consumes:
+      - application/json
+      description: Create a new order for customer. Need to login first
+      parameters:
+      - description: JWT Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Order details
+        in: body
+        name: createOrder
+        required: true
+        schema:
+          $ref: '#/definitions/web.CreateOrderProductRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/web.SwCreateOrder'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/web.ErrWebResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/web.ErrWebResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/web.ErrWebResponse'
+      summary: Create order (Customer Only)
+      tags:
+      - Order
+  /order/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get order detail by id. Need to login first
+      parameters:
+      - description: JWT Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Order ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/web.SwOrderDetail'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/web.ErrWebResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/web.ErrWebResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/web.ErrWebResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/web.ErrWebResponse'
+      summary: Order Detail (Customer and Admin)
+      tags:
+      - Order
+  /order/admin:
+    get:
+      consumes:
+      - application/json
+      description: List of all customer orders
+      parameters:
+      - description: JWT Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Page
+        in: query
+        name: page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/web.SwOrderDetail'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/web.ErrWebResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/web.ErrWebResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/web.ErrWebResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/web.ErrWebResponse'
+      summary: List all order (Admin Only)
+      tags:
+      - Order
+  /order/admin/confirm/{id}:
+    put:
+      consumes:
+      - application/json
+      description: Confirm the order to be completed.
+      parameters:
+      - description: JWT Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Order ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/web.SwOrderConfirm'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/web.ErrWebResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/web.ErrWebResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/web.ErrWebResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/web.ErrWebResponse'
+      summary: Confirm Order (Admin Only)
+      tags:
+      - Order
+  /order/cancel/{id}:
+    post:
+      consumes:
+      - application/json
+      description: Canceling customer order. Need to login first
+      parameters:
+      - description: JWT Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Order ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/web.SwCancelOrder'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/web.ErrWebResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/web.ErrWebResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/web.ErrWebResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/web.ErrWebResponse'
+      summary: Cancel order (Customer Only)
+      tags:
+      - Order
+swagger: "2.0"
