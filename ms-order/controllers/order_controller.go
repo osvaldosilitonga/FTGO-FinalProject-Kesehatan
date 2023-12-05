@@ -8,8 +8,10 @@ import (
 	"order/models/entity"
 	"order/repository"
 	"order/services"
+	"strings"
 	"time"
 
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -82,6 +84,33 @@ func (o *Order) CreateOrderProduct(ctx context.Context, req *orderPb.CreateOrder
 	}
 
 	response := helper.ToOrderResponse(r)
+
+	return response, nil
+}
+
+func (o *Order) UpdateStatus(ctx context.Context, req *orderPb.UpdateOrderStatusRequest) (*orderPb.Order, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	orderId, err := primitive.ObjectIDFromHex(req.OrderId)
+	if err != nil {
+		return nil, status.Error(codes.InvalidArgument, err.Error())
+	}
+
+	order, err := o.orderRepo.FindById(ctx, orderId)
+	if err != nil {
+		return nil, status.Error(codes.NotFound, err.Error())
+	}
+
+	order.Status = strings.ToUpper(req.Status)
+	order.UpdatedAt = time.Now().UnixMilli()
+
+	err = o.orderRepo.Update(ctx, order)
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	response := helper.ToOrderResponse(order)
 
 	return response, nil
 }

@@ -12,6 +12,7 @@ import (
 
 type OrderRepository interface {
 	Save(ctx context.Context, data *entity.Orders) (*entity.Orders, error)
+	FindById(ctx context.Context, id primitive.ObjectID) (*entity.Orders, error)
 	Update(ctx context.Context, data *entity.Orders) error
 }
 
@@ -48,4 +49,23 @@ func (o *OrderRepositoryImpl) Update(ctx context.Context, data *entity.Orders) e
 	}
 
 	return nil
+}
+
+func (o *OrderRepositoryImpl) FindById(ctx context.Context, id primitive.ObjectID) (*entity.Orders, error) {
+	var order entity.Orders
+
+	result := o.dbCollection.FindOne(ctx, bson.M{"_id": id})
+	if result.Err() == mongo.ErrNoDocuments {
+		return nil, errors.New("order not found")
+	}
+	if result.Err() != nil {
+		return nil, result.Err()
+	}
+
+	err := result.Decode(&order)
+	if err != nil {
+		return nil, err
+	}
+
+	return &order, nil
 }
