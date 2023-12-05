@@ -23,7 +23,7 @@ func RegisterRoutes(e *echo.Echo, rch *amqp.Channel) {
 	user := e.Group("/user")
 	// user.Use(middleware.RequireAuth)
 	{
-		user.GET("/profile/:id", handler.GetUserProfile) //ngambil dari parameter id, jadi handler diganti juga
+		user.GET("/profile/:id", handler.GetUserProfile)
 		user.PUT("/profile/:id/update", handler.UpdateUserProfile)
 		user.GET("/activities/:id", handler.GetUserActivities)
 	}
