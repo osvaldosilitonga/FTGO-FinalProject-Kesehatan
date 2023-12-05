@@ -15,6 +15,7 @@ type User interface {
 	Register(req *web.UsersRegisterRequest) (*web.HttpUserRegister, int, error)
 	RegisterAdmin(req *web.UsersRegisterRequest) (*web.HttpUserRegister, int, error)
 	GetUserProfile(id int) (*web.HttpUserProfile, int, error)
+	UpdateUserProfile(id int, data *web.UsersUpdateProfileRequest) (*web.HttpUserUpdateProfile, int, error)
 }
 
 type UserImpl struct{}
@@ -145,6 +146,40 @@ func (u *UserImpl) GetUserProfile(id int) (*web.HttpUserProfile, int, error) {
 	stringBody := string(body)
 
 	user := web.HttpUserProfile{}
+
+	err = json.Unmarshal([]byte(stringBody), &user)
+	if err != nil {
+		return nil, http.StatusInternalServerError, err
+	}
+
+	return &user, resp.StatusCode, nil
+}
+
+func (u *UserImpl) UpdateUserProfile(id int, data *web.UsersUpdateProfileRequest) (*web.HttpUserUpdateProfile, int, error) {
+	d, err := json.Marshal(data)
+	if err != nil {
+		return nil, http.StatusInternalServerError, err
+	}
+
+	baseUrl := os.Getenv("USER_SERVICE_BASE_URL")
+	req, err := http.NewRequest("PUT", fmt.Sprintf("%s/user/profile/%d/update", baseUrl, id), bytes.NewBuffer(d))
+	if err != nil {
+		return nil, http.StatusInternalServerError, err
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+
+	client := http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, http.StatusInternalServerError, err
+	}
+	defer resp.Body.Close()
+
+	body, _ := io.ReadAll(resp.Body)
+	stringBody := string(body)
+
+	user := web.HttpUserUpdateProfile{}
 
 	err = json.Unmarshal([]byte(stringBody), &user)
 	if err != nil {

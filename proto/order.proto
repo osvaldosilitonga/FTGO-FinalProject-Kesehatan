@@ -9,7 +9,7 @@ option go_package = "internal/order";
 service OrderService {
     rpc CreateOrderProduct(CreateOrderProductRequest) returns (Order);
     rpc UpdateStatus(UpdateOrderStatusRequest) returns (Order) {}
-    rpc Cancel(CancelOrderRequest) returns (Empty) {}
+    rpc Cancel(CancelOrderRequest) returns (Order) {}
     // rpc FindByOrderId(GetOrderRequest) returns (GetOrderResponse) {}
     // rpc FindByUserId(GetOrdersByUserIdRequest) returns (GetOrdersByUserIdResponse) {}
 }

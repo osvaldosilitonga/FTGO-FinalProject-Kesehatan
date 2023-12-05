@@ -142,5 +142,6 @@ func (u *UserHandlerImpl) LoginUser(c echo.Context) error {
 		"token": tokenString,
 		"id":    user.ID,
 		"role":  user.Role,
+		"email": user.Email,
 	})
 }

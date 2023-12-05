@@ -16,6 +16,13 @@ type UsersRegisterRequest struct {
 	Gender    string `json:"gender" validate:"required"`
 }
 
+type UsersUpdateProfileRequest struct {
+	Address   string `json:"address"`
+	Phone     string `json:"phone"`
+	Birthdate string `json:"birthdate"`
+	Gender    string `json:"gender"`
+}
+
 // Response
 type LoginResponse struct {
 	Token string `json:"token"`
@@ -35,6 +42,7 @@ type HttpUserLogin struct {
 	ID      int    `json:"id"`
 	Role    string `json:"role"`
 	Token   string `json:"token"`
+	Email   string `json:"email"`
 	Message string `json:"message"`
 }
 
@@ -57,6 +65,17 @@ type Profile struct {
 	Gender    string `json:"gender"`
 }
 type HttpUserProfile struct {
-	Message string  `json:"message"`
-	User    Profile `json:"user"`
+	// Message string `json:"message"`
+	// User    Profile `json:"user"`
+	UserID    int    `json:"user_id"`
+	Address   string `json:"address"`
+	Phone     string `json:"phone"`
+	Birthdate string `json:"birthdate"`
+	Gender    string `json:"gender"`
+	Email     string `json:"email"`
+	Name      string `json:"name"`
+}
+
+type HttpUserUpdateProfile struct {
+	UserProfile Profile `json:"user_profile"`
 }

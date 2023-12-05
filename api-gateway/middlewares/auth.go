@@ -51,7 +51,6 @@ func RequireAuth(next echo.HandlerFunc) echo.HandlerFunc {
 		}
 
 		userID := int(claims["id"].(float64))
-
 		c.Set("id", userID)
 		c.Set("role", claims["role"])
 		c.Set("email", claims["email"])

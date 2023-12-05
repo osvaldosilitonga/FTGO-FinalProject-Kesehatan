@@ -12,6 +12,7 @@ type Products struct {
 type Orders struct {
 	Id          primitive.ObjectID `json:"order_id,omitempty" bson:"_id,omitempty"`
 	UserId      int                `json:"user_id,omitempty" bson:"user_id,omitempty"`
+	UserEmail   string             `json:"user_email,omitempty" bson:"user_email,omitempty"`
 	Type        string             `json:"type,omitempty" bson:"type,omitempty"`
 	TotalAmount int64              `json:"total_amount,omitempty" bson:"total_amount,omitempty"`
 	Status      string             `json:"status,omitempty" bson:"status,omitempty"`

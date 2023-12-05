@@ -24,7 +24,7 @@ const _ = grpc.SupportPackageIsVersion7
 type OrderServiceClient interface {
 	CreateOrderProduct(ctx context.Context, in *CreateOrderProductRequest, opts ...grpc.CallOption) (*Order, error)
 	UpdateStatus(ctx context.Context, in *UpdateOrderStatusRequest, opts ...grpc.CallOption) (*Order, error)
-	Cancel(ctx context.Context, in *CancelOrderRequest, opts ...grpc.CallOption) (*Empty, error)
+	Cancel(ctx context.Context, in *CancelOrderRequest, opts ...grpc.CallOption) (*Order, error)
 }
 
 type orderServiceClient struct {
@@ -53,8 +53,8 @@ func (c *orderServiceClient) UpdateStatus(ctx context.Context, in *UpdateOrderSt
 	return out, nil
 }
 
-func (c *orderServiceClient) Cancel(ctx context.Context, in *CancelOrderRequest, opts ...grpc.CallOption) (*Empty, error) {
-	out := new(Empty)
+func (c *orderServiceClient) Cancel(ctx context.Context, in *CancelOrderRequest, opts ...grpc.CallOption) (*Order, error) {
+	out := new(Order)
 	err := c.cc.Invoke(ctx, "/order.OrderService/Cancel", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -68,7 +68,7 @@ func (c *orderServiceClient) Cancel(ctx context.Context, in *CancelOrderRequest,
 type OrderServiceServer interface {
 	CreateOrderProduct(context.Context, *CreateOrderProductRequest) (*Order, error)
 	UpdateStatus(context.Context, *UpdateOrderStatusRequest) (*Order, error)
-	Cancel(context.Context, *CancelOrderRequest) (*Empty, error)
+	Cancel(context.Context, *CancelOrderRequest) (*Order, error)
 	mustEmbedUnimplementedOrderServiceServer()
 }
 
@@ -82,7 +82,7 @@ func (UnimplementedOrderServiceServer) CreateOrderProduct(context.Context, *Crea
 func (UnimplementedOrderServiceServer) UpdateStatus(context.Context, *UpdateOrderStatusRequest) (*Order, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateStatus not implemented")
 }
-func (UnimplementedOrderServiceServer) Cancel(context.Context, *CancelOrderRequest) (*Empty, error) {
+func (UnimplementedOrderServiceServer) Cancel(context.Context, *CancelOrderRequest) (*Order, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Cancel not implemented")
 }
 func (UnimplementedOrderServiceServer) mustEmbedUnimplementedOrderServiceServer() {}
