@@ -13,6 +13,7 @@ type PaymentRepository interface {
 	FindByInvoiceID(id string) (*entity.Payments, error)
 	FindByOrderID(id string) (*entity.Payments, error)
 	FindByUserID(id, page int, status string) (*[]entity.Payments, error)
+	Update(orderId string, d *entity.Payments) error
 
 	UpdateFromXendit(d *web.XenditCallbackBody) (*entity.Payments, error)
 }
@@ -107,4 +108,13 @@ func (p *PaymentRepositoryImpl) FindByUserID(id, page int, status string) (*[]en
 	}
 
 	return &data, nil
+}
+
+func (p *PaymentRepositoryImpl) Update(orderId string, d *entity.Payments) error {
+	err := p.DB.Where("order_id = ?", orderId).Updates(d).Error
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

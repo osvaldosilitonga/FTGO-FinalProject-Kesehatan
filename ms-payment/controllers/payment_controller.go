@@ -10,6 +10,7 @@ import (
 	"payment/utils"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/labstack/echo/v4"
 )
@@ -19,6 +20,7 @@ type Payment interface {
 	FindByInvoiceID(ctx echo.Context) error
 	FindByOrderID(ctx echo.Context) error
 	FindByUserID(ctx echo.Context) error
+	Cancel(ctx echo.Context) error
 }
 
 type PaymentImpl struct {
@@ -130,6 +132,29 @@ func (p *PaymentImpl) FindByUserID(c echo.Context) error {
 
 	if len(*payment) == 0 {
 		return utils.ErrorMessage(c, &utils.ApiNotFound, "Data not found")
+	}
+
+	return c.JSON(200, payment)
+}
+
+func (p *PaymentImpl) Cancel(c echo.Context) error {
+	orderId := c.Param("id")
+
+	payment, err := p.Repo.FindByOrderID(orderId)
+	if err != nil {
+		return utils.ErrorMessage(c, &utils.ApiNotFound, err.Error())
+	}
+
+	if payment.Status == "PAID" {
+		return utils.ErrorMessage(c, &utils.ApiBadRequest, "Invoice already paid")
+	}
+
+	payment.Status = "CANCEL"
+	payment.UpdatedAt = time.Now()
+
+	err = p.Repo.Update(orderId, payment)
+	if err != nil {
+		return utils.ErrorMessage(c, &utils.ApiInternalServer, err.Error())
 	}
 
 	return c.JSON(200, payment)

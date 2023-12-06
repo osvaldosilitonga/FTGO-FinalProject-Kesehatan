@@ -28,6 +28,8 @@ func Routes(e *echo.Echo, rch *amqp.Channel) {
 		payment.GET("/:id", paymentController.FindByInvoiceID)
 		payment.GET("/order/:id", paymentController.FindByOrderID)
 		payment.GET("/user/:id", paymentController.FindByUserID)
+
+		payment.PUT("/cancel/:id", paymentController.Cancel)
 	}
 
 	triggerService := services.NewTriggerApiGateway()
