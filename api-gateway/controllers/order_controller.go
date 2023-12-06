@@ -22,6 +22,7 @@ type OrderController interface {
 	ListOrder(c echo.Context) error
 	OrderDetail(c echo.Context) error
 	ConfirmOrder(c echo.Context) error
+	FindByUserId(c echo.Context) error
 }
 
 type OrderControllerImpl struct {
@@ -284,6 +285,60 @@ func (o *OrderControllerImpl) ConfirmOrder(c echo.Context) error {
 	res, err := o.OrderService.UpdateStatus(c.Request().Context(), req)
 	if err != nil {
 		return utils.GrpcError(c, err)
+	}
+
+	return utils.SuccessMessage(c, &utils.ApiOk, res)
+}
+
+// @Summary 	Find Order by User ID (User)
+// @Description Find order by user id
+// @Tags 			Order
+// @Accept 		json
+// @Produce 	json
+// @Param        Authorization header string true "JWT Token"
+// @Param 			id path string true "Order ID"
+// @Success 	200 {object} web.SwOrderFindByID
+// @Failure 	400 {object} web.ErrWebResponse
+// @Failure 	401 {object} web.ErrWebResponse
+// @Failure 	404 {object} web.ErrWebResponse
+// @Failure 	500 {object} web.ErrWebResponse
+// @Router 		/order/user/{id} [get]
+func (o *OrderControllerImpl) FindByUserId(c echo.Context) error {
+	userId := c.Get("id").(int)
+
+	paramId := c.Param("id")
+	pId, error := strconv.Atoi(paramId)
+	if error != nil {
+		return utils.ErrorMessage(c, &utils.ApiBadRequest, error)
+	}
+
+	if userId != pId {
+		return utils.ErrorMessage(c, &utils.ApiForbidden, nil)
+	}
+
+	status := strings.ToUpper(c.QueryParam("status"))
+	page := c.QueryParam("page")
+	if page == "" {
+		page = "1"
+	}
+	pageInt, err := strconv.Atoi(page)
+	if err != nil {
+		return utils.ErrorMessage(c, &utils.ApiBadRequest, err)
+	}
+
+	req := &pb.FindByUserIdRequest{
+		UserId: int32(pId),
+		Page:   int32(pageInt),
+		Status: status,
+	}
+
+	res, err := o.OrderService.FindByUserId(c.Request().Context(), req)
+	if err != nil {
+		return utils.GrpcError(c, err)
+	}
+
+	if len(res.Orders) == 0 {
+		return utils.ErrorMessage(c, &utils.ApiNotFound, nil)
 	}
 
 	return utils.SuccessMessage(c, &utils.ApiOk, res)

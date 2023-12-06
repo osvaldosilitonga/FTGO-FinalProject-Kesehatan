@@ -16,6 +16,7 @@ type OrderRepository interface {
 	FindById(ctx context.Context, id primitive.ObjectID) (*entity.Orders, error)
 	Update(ctx context.Context, data *entity.Orders) error
 	FindAll(ctx context.Context, page int, status string) ([]*entity.Orders, error)
+	FindByUserID(ctx context.Context, userID, page int, status string) ([]*entity.Orders, error)
 }
 
 type OrderRepositoryImpl struct {
@@ -86,6 +87,47 @@ func (o *OrderRepositoryImpl) FindAll(ctx context.Context, page int, status stri
 	if status != "" {
 		filter = bson.M{
 			"status": status,
+		}
+	}
+
+	opts := options.FindOptions{
+		Skip:  &skip,
+		Limit: &limit,
+		Sort: bson.M{
+			"updated_at": -1,
+		},
+	}
+
+	cursor, err := o.dbCollection.Find(ctx, filter, &opts)
+	if err != nil {
+		return nil, err
+	}
+
+	err = cursor.All(ctx, &orders)
+	if err != nil {
+		return nil, err
+	}
+
+	return orders, nil
+}
+
+func (o *OrderRepositoryImpl) FindByUserID(ctx context.Context, userID, page int, status string) ([]*entity.Orders, error) {
+	var orders []*entity.Orders
+
+	if page < 1 {
+		page = 1
+	}
+
+	skip := int64((page - 1) * 10)
+	limit := int64(10)
+
+	filter := bson.M{
+		"user_id": userID,
+	}
+	if status != "" {
+		filter = bson.M{
+			"user_id": userID,
+			"status":  status,
 		}
 	}
 

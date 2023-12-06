@@ -14,6 +14,7 @@ type Order interface {
 	FindByOrderId(ctx context.Context, req *pb.FindByOrderIdRequest) (*pb.Order, error)
 	UpdateStatus(ctx context.Context, req *pb.UpdateOrderStatusRequest) (*pb.Order, error)
 	ListOrder(ctx context.Context, req *pb.ListOrderRequest) (*pb.ListOrderResponse, error)
+	FindByUserId(ctx context.Context, req *pb.FindByUserIdRequest) (*pb.ListOrderResponse, error)
 }
 
 type OrderImpl struct {
@@ -64,6 +65,17 @@ func (o *OrderImpl) ListOrder(ctx context.Context, req *pb.ListOrderRequest) (*p
 	orderClient := pb.NewOrderServiceClient(o.Conn)
 
 	order, err := orderClient.ListOrder(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+
+	return order, nil
+}
+
+func (o *OrderImpl) FindByUserId(ctx context.Context, req *pb.FindByUserIdRequest) (*pb.ListOrderResponse, error) {
+	orderClient := pb.NewOrderServiceClient(o.Conn)
+
+	order, err := orderClient.FindByUserID(ctx, req)
 	if err != nil {
 		return nil, err
 	}

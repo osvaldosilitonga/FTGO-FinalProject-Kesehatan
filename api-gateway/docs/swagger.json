@@ -269,6 +269,69 @@
                 }
             }
         },
+        "/order/user/{id}": {
+            "get": {
+                "description": "Find order by user id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Order"
+                ],
+                "summary": "Find Order by User ID (User)",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "JWT Token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Order ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/web.SwOrderFindByID"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/web.ErrWebResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/web.ErrWebResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/web.ErrWebResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/web.ErrWebResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/order/{id}": {
             "get": {
                 "description": "Get order detail by id. Need to login first",
@@ -1252,6 +1315,63 @@
                 },
                 "status": {
                     "type": "string"
+                }
+            }
+        },
+        "web.SwOrderFindByID": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "data": {
+                    "$ref": "#/definitions/web.SwOrderFindByIDData"
+                },
+                "status": {
+                    "type": "string"
+                }
+            }
+        },
+        "web.SwOrderFindByIDData": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "order_id": {
+                    "type": "string"
+                },
+                "products": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/web.SwOrderFindByIDProduct"
+                    }
+                },
+                "status": {
+                    "type": "string"
+                },
+                "total_amount": {
+                    "type": "integer"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "web.SwOrderFindByIDProduct": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "qty": {
+                    "type": "integer"
                 }
             }
         },

@@ -230,3 +230,26 @@ type SwPaymentByUserID struct {
 	Status string                 `json:"status"`
 	Data   []SwPaymentInvoiceData `json:"data"`
 }
+
+// ------------------ ORDER --------------------------
+type SwOrderFindByID struct {
+	Code   int                 `json:"code"`
+	Status string              `json:"status"`
+	Data   SwOrderFindByIDData `json:"data"`
+}
+
+type SwOrderFindByIDData struct {
+	OrderId     string                   `json:"order_id"`
+	UserId      int                      `json:"user_id"`
+	Type        string                   `json:"type"`
+	TotalAmount int                      `json:"total_amount"`
+	Status      string                   `json:"status"`
+	Products    []SwOrderFindByIDProduct `json:"products"`
+	CreatedAt   string                   `json:"created_at"`
+	UpdatedAt   string                   `json:"updated_at"`
+}
+
+type SwOrderFindByIDProduct struct {
+	Id       string `json:"id"`
+	Quantity int    `json:"qty"`
+}

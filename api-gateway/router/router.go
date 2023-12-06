@@ -57,6 +57,7 @@ func Router(r *echo.Echo) {
 
 		// Owner and Admin/
 		order.GET("/:id", orderController.OrderDetail)
+		order.GET("/user/:id", orderController.FindByUserId)
 
 		// Admin Only
 		order.GET("/admin", orderController.ListOrder, middlewares.IsAdmin)

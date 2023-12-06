@@ -197,3 +197,26 @@ func (o *Order) ListOrder(ctx context.Context, req *orderPb.ListOrderRequest) (*
 
 	return response, nil
 }
+
+func (o *Order) FindByUserID(ctx context.Context, req *orderPb.FindByUserIdRequest) (*orderPb.ListOrderResponse, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	id := int(req.UserId)
+	page := int(req.Page)
+	stat := req.Status
+
+	orders, err := o.orderRepo.FindByUserID(ctx, id, page, stat)
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	response := &orderPb.ListOrderResponse{}
+
+	for _, order := range orders {
+		orderResponse := helper.ToOrderResponse(order)
+		response.Orders = append(response.Orders, orderResponse)
+	}
+
+	return response, nil
+}

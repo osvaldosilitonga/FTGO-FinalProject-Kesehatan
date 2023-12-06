@@ -1,0 +1,24 @@
+// Register user Body
+{
+	"name": "testing user 1",
+  "email": "testinguser1@gmail.com",
+  "password": "test12345",
+  "address": "test Manchester",
+  "phone": "+9876543210",
+  "birthdate": "1990-01-01",
+  "gender": "male"
+}
+
+// Login user Body
+{
+	"email": "testinguser1@gmail.com",
+  "password": "test12345"
+}
+
+// Update user Body
+{
+	"address": "jakarta",
+	"phone": "082222",
+	"birthdate": "1992-02-02",
+	"gender": "male"
+}

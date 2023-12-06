@@ -8,10 +8,11 @@ option go_package = "internal/order";
 
 service OrderService {
     rpc CreateOrderProduct(CreateOrderProductRequest) returns (Order);
-    rpc UpdateStatus(UpdateOrderStatusRequest) returns (Order) {}
-    rpc Cancel(CancelOrderRequest) returns (Order) {}
-    rpc FindByOrderId(FindByOrderIdRequest) returns (Order) {}
-    rpc ListOrder(ListOrderRequest) returns (ListOrderResponse) {}
+    rpc UpdateStatus(UpdateOrderStatusRequest) returns (Order);
+    rpc Cancel(CancelOrderRequest) returns (Order);
+    rpc FindByOrderId(FindByOrderIdRequest) returns (Order);
+    rpc ListOrder(ListOrderRequest) returns (ListOrderResponse);
+    rpc FindByUserID(FindByUserIdRequest) returns (ListOrderResponse);
 }
 
 message Empty{}
@@ -55,6 +56,12 @@ message CancelOrderRequest {
 
 message FindByOrderIdRequest {
     string order_id = 1;
+}
+
+message FindByUserIdRequest {
+    int32 user_id = 1;
+    string status = 2;
+    int32 page = 3;
 }
 
 message ListOrderRequest {

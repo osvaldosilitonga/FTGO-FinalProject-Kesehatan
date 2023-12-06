@@ -121,6 +121,43 @@ definitions:
       status:
         type: string
     type: object
+  web.SwOrderFindByID:
+    properties:
+      code:
+        type: integer
+      data:
+        $ref: '#/definitions/web.SwOrderFindByIDData'
+      status:
+        type: string
+    type: object
+  web.SwOrderFindByIDData:
+    properties:
+      created_at:
+        type: string
+      order_id:
+        type: string
+      products:
+        items:
+          $ref: '#/definitions/web.SwOrderFindByIDProduct'
+        type: array
+      status:
+        type: string
+      total_amount:
+        type: integer
+      type:
+        type: string
+      updated_at:
+        type: string
+      user_id:
+        type: integer
+    type: object
+  web.SwOrderFindByIDProduct:
+    properties:
+      id:
+        type: string
+      qty:
+        type: integer
+    type: object
   web.SwPaymentByUserID:
     properties:
       code:
@@ -659,6 +696,48 @@ paths:
           schema:
             $ref: '#/definitions/web.ErrWebResponse'
       summary: Cancel order (Customer Only)
+      tags:
+      - Order
+  /order/user/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Find order by user id
+      parameters:
+      - description: JWT Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Order ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/web.SwOrderFindByID'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/web.ErrWebResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/web.ErrWebResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/web.ErrWebResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/web.ErrWebResponse'
+      summary: Find Order by User ID (User)
       tags:
       - Order
   /payment/{id}:
