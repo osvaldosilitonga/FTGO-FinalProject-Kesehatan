@@ -63,10 +63,12 @@ func Router(r *echo.Echo) {
 		order.PUT("/admin/confirm/:id", orderController.ConfirmOrder, middlewares.IsAdmin)
 	}
 
-	// payment := v1.Group("/payment")
-	// paymentController := controllers.NewPaymentController()
-	// {
-	// 	payment.POST("", paymentController.Create)
-	// }
+	payment := v1.Group("/payment")
+	paymentController := controllers.NewPaymentController(paymentService)
+	{
+		payment.GET("/:id", paymentController.FindByInvoiceID)
+		payment.GET("/order/:id", paymentController.FindByOrderID)
+		payment.GET("/user/:id", paymentController.FindByUserID)
+	}
 
 }
