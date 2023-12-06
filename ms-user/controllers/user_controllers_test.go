@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"miniproject/dto"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -9,17 +10,34 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-type MockUserHandler struct{}
+// type MockUserHandler struct{}
 
 func (m *MockUserHandler) RegisterUser(c echo.Context) error {
+	input := new(dto.UserRegisterRequest)
+	if err := c.Bind(input); err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]interface{}{"message": "Invalid request data"})
+	}
 	return c.JSON(http.StatusCreated, map[string]interface{}{"message": "Registration successful"})
 }
 
 func (m *MockUserHandler) RegisterAdmin(c echo.Context) error {
+	input := new(dto.UserRegisterRequest)
+	if err := c.Bind(input); err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]interface{}{"message": "Invalid request data"})
+	}
 	return c.JSON(http.StatusCreated, map[string]interface{}{"message": "Admin registration successful"})
 }
 
 func (m *MockUserHandler) LoginUser(c echo.Context) error {
+	input := new(dto.UserLoginRequest)
+	if err := c.Bind(input); err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]interface{}{"message": "Invalid request data"})
+	}
+
+	if input.Email != "maguire@email.com" || input.Password != "maguiree" {
+		return c.JSON(http.StatusBadRequest, map[string]interface{}{"message": "Invalid email or password"})
+	}
+
 	return c.JSON(http.StatusOK, map[string]interface{}{"token": "mock-token", "id": 123, "role": "user"})
 }
 
