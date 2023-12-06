@@ -65,6 +65,7 @@ func Router(r *echo.Echo) {
 
 	payment := v1.Group("/payment")
 	paymentController := controllers.NewPaymentController(paymentService)
+	payment.Use(middlewares.RequireAuth)
 	{
 		payment.GET("/:id", paymentController.FindByInvoiceID)
 		payment.GET("/order/:id", paymentController.FindByOrderID)

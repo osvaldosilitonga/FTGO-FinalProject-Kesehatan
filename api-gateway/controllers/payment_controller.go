@@ -3,6 +3,7 @@ package controllers
 import (
 	"gateway/service"
 	"gateway/utils"
+	"strconv"
 
 	"github.com/labstack/echo/v4"
 )
@@ -35,42 +36,67 @@ func (p *PaymentImpl) Create(c echo.Context) error {
 func (p *PaymentImpl) FindByInvoiceID(c echo.Context) error {
 	invoiceID := c.Param("id")
 
+	userId := c.Get("id").(int)
+	role := c.Get("role").(string)
+
 	// make request to payment service
 	resp, code, err := p.PaymentService.FindByInvoiceID(invoiceID)
+	if code != 200 {
+		return utils.HttpCodeError(c, code, resp.Message)
+	}
 	if err != nil {
 		return utils.ErrorMessage(c, &utils.ApiInternalServer, err.Error())
 	}
-	if code != 200 {
-		return utils.HttpCodeError(c, code, resp.Message)
+
+	if resp.UserID != userId && role != "admin" {
+		return utils.ErrorMessage(c, &utils.ApiForbidden, "You are not authorized to access this resource")
 	}
 
 	return utils.SuccessMessage(c, &utils.ApiOk, resp)
 }
 
-func (p *PaymentImpl) FindByOrderID(ctx echo.Context) error {
-	orderID := ctx.Param("id")
+func (p *PaymentImpl) FindByOrderID(c echo.Context) error {
+	orderID := c.Param("id")
+
+	userId := c.Get("id").(int)
+	role := c.Get("role").(string)
 
 	// make request to payment service
 	resp, code, err := p.PaymentService.FIndByOrderID(orderID)
-	if err != nil {
-		return utils.ErrorMessage(ctx, &utils.ApiInternalServer, err.Error())
-	}
 	if code != 200 {
-		return utils.HttpCodeError(ctx, code, resp.Message)
+		return utils.HttpCodeError(c, code, resp.Message)
+	}
+	if err != nil {
+		return utils.ErrorMessage(c, &utils.ApiInternalServer, err.Error())
 	}
 
-	return utils.SuccessMessage(ctx, &utils.ApiOk, resp)
+	if resp.UserID != userId && role != "admin" {
+		return utils.ErrorMessage(c, &utils.ApiForbidden, "You are not authorized to access this resource")
+	}
+
+	return utils.SuccessMessage(c, &utils.ApiOk, resp)
 }
 
-func (p *PaymentImpl) FindByUserID(ctx echo.Context) error {
-	userID := ctx.Param("id")
+func (p *PaymentImpl) FindByUserID(c echo.Context) error {
+	userID := c.Param("id")
+	userIDInt, err := strconv.Atoi(userID)
+	if err != nil {
+		return utils.ErrorMessage(c, &utils.ApiBadRequest, err.Error())
+	}
 
-	queryPage := ctx.QueryParam("page")
+	userId := c.Get("id").(int)
+	role := c.Get("role").(string)
+
+	if userId != userIDInt && role != "admin" {
+		return utils.ErrorMessage(c, &utils.ApiForbidden, "You are not authorized to access this resource")
+	}
+
+	queryPage := c.QueryParam("page")
 	if queryPage == "" {
 		queryPage = "1"
 	}
 
-	queryStatus := ctx.QueryParam("status")
+	queryStatus := c.QueryParam("status")
 	if len(queryStatus) == 0 {
 		queryStatus = "ALL"
 	}
@@ -78,11 +104,11 @@ func (p *PaymentImpl) FindByUserID(ctx echo.Context) error {
 	// make request to payment service
 	resp, code, err := p.PaymentService.FindByUserID(userID, queryPage, queryStatus)
 	if code != 200 {
-		return utils.HttpCodeError(ctx, code, err.Error())
+		return utils.HttpCodeError(c, code, err.Error())
 	}
 	if err != nil {
-		return utils.ErrorMessage(ctx, &utils.ApiInternalServer, err.Error())
+		return utils.ErrorMessage(c, &utils.ApiInternalServer, err.Error())
 	}
 
-	return utils.SuccessMessage(ctx, &utils.ApiOk, resp)
+	return utils.SuccessMessage(c, &utils.ApiOk, resp)
 }
