@@ -3,6 +3,7 @@ package controllers
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"gateway/models/entity"
 	"gateway/models/web"
 	"gateway/service"
@@ -163,12 +164,11 @@ func (u *UserImpl) RegisterAdmin(c echo.Context) error {
 	return utils.SuccessMessage(c, &utils.ApiOk, response)
 }
 
-// @Summary 	Profile (Owner Only)
-// @Description Get user profile
+// @Summary 	Get User Profile
+// @Description Get user profile by ID
 // @Tags 			User
 // @Accept 		json
 // @Produce 	json
-// @Param        Authorization header string true "JWT Token"
 // @Param 			id path integer true "User ID"
 // @Success 	200 {object} web.SwUserProfile
 // @Failure 	400 {object} web.ErrWebResponse
@@ -182,19 +182,15 @@ func (u *UserImpl) GetUserProfile(c echo.Context) error {
 		return utils.ErrorMessage(c, &utils.ApiBadRequest, "invalid user id")
 	}
 
-	userID := c.Get("id").(int)
-
-	if paramID != userID {
-		return utils.ErrorMessage(c, &utils.ApiForbidden, "Forbidden, Cannot access profile")
-	}
+	fmt.Println(paramID, " <----------------- paramID")
 
 	// make request to user service
-	resp, code, err := u.UserService.GetUserProfile(userID)
-	if err != nil {
-		return utils.ErrorMessage(c, &utils.ApiInternalServer, nil)
-	}
+	resp, code, err := u.UserService.GetUserProfile(paramID)
 	if code != 200 {
 		return utils.HttpCodeError(c, code, err.Error())
+	}
+	if err != nil {
+		return utils.ErrorMessage(c, &utils.ApiInternalServer, nil)
 	}
 
 	return utils.SuccessMessage(c, &utils.ApiOk, resp)

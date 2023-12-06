@@ -142,6 +142,24 @@ func (u *UserImpl) GetUserProfile(id int) (*web.HttpUserProfile, int, error) {
 	}
 	defer resp.Body.Close()
 
+	if resp.StatusCode != 200 {
+		type resMsg struct {
+			Message string `json:"message"`
+		}
+
+		body, _ := io.ReadAll(resp.Body)
+		stringBody := string(body)
+
+		res := resMsg{}
+
+		err = json.Unmarshal([]byte(stringBody), &res)
+		if err != nil {
+			return nil, http.StatusInternalServerError, err
+		}
+
+		return nil, resp.StatusCode, fmt.Errorf(res.Message)
+	}
+
 	body, _ := io.ReadAll(resp.Body)
 	stringBody := string(body)
 

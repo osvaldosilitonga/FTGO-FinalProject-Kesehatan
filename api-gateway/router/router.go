@@ -44,7 +44,7 @@ func Router(r *echo.Echo) {
 
 		// User and Admin
 		user.PUT("/profile/:id", userController.UpdateUserProfile, middlewares.RequireAuth)
-		user.GET("/profile/:id", userController.GetUserProfile, middlewares.RequireAuth)
+		user.GET("/profile/:id", userController.GetUserProfile)
 	}
 
 	order := v1.Group("/order")

@@ -929,7 +929,7 @@ const docTemplate = `{
         },
         "/user/profile/{id}": {
             "get": {
-                "description": "Get user profile",
+                "description": "Get user profile by ID",
                 "consumes": [
                     "application/json"
                 ],
@@ -939,15 +939,8 @@ const docTemplate = `{
                 "tags": [
                     "User"
                 ],
-                "summary": "Profile (Owner Only)",
+                "summary": "Get User Profile",
                 "parameters": [
-                    {
-                        "type": "string",
-                        "description": "JWT Token",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
                     {
                         "type": "integer",
                         "description": "User ID",
