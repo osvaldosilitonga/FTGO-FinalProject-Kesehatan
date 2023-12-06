@@ -3,6 +3,7 @@ package router
 import (
 	"gateway/configs"
 	"gateway/controllers"
+	"gateway/hooks"
 	"gateway/middlewares"
 	"gateway/service"
 	"os"
@@ -71,6 +72,12 @@ func Router(r *echo.Echo) {
 		payment.GET("/:id", paymentController.FindByInvoiceID)
 		payment.GET("/order/:id", paymentController.FindByOrderID)
 		payment.GET("/user/:id", paymentController.FindByUserID)
+	}
+
+	xendit := v1.Group("/xendit")
+	xenditHooks := hooks.NewXenditHooks(orderService, paymentService)
+	{
+		xendit.POST("/invoice", xenditHooks.InvoiceHooks)
 	}
 
 }

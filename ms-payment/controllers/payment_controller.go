@@ -21,6 +21,7 @@ type Payment interface {
 	FindByOrderID(ctx echo.Context) error
 	FindByUserID(ctx echo.Context) error
 	Cancel(ctx echo.Context) error
+	Paid(ctx echo.Context) error
 }
 
 type PaymentImpl struct {
@@ -156,6 +157,59 @@ func (p *PaymentImpl) Cancel(c echo.Context) error {
 	if err != nil {
 		return utils.ErrorMessage(c, &utils.ApiInternalServer, err.Error())
 	}
+
+	return c.JSON(200, payment)
+}
+
+func (p *PaymentImpl) Paid(c echo.Context) error {
+	orderId := c.Param("id")
+
+	body := web.PaidRequest{}
+	if err := c.Bind(&body); err != nil {
+		return utils.ErrorMessage(c, &utils.ApiBadRequest, "Invalid request body")
+	}
+
+	payment, err := p.Repo.FindByOrderID(orderId)
+	if err != nil {
+		return utils.ErrorMessage(c, &utils.ApiNotFound, err.Error())
+	}
+
+	if payment.Status == "PAID" {
+		return utils.ErrorMessage(c, &utils.ApiBadRequest, "Invoice already paid")
+	}
+
+	payment.Status = body.Status
+	payment.MerchantName = body.MerchantName
+	payment.PaymentMethod = body.PaymentMethod
+	payment.Currency = body.Currency
+	payment.UpdatedAt = time.Now()
+
+	err = p.Repo.Update(orderId, payment)
+	if err != nil {
+		return utils.ErrorMessage(c, &utils.ApiInternalServer, err.Error())
+	}
+
+	// Send invoice to email notification
+	resp := web.PaidNotification{
+		InvoiceID:     payment.InvoiceID,
+		OrderID:       payment.OrderID,
+		Email:         payment.Email,
+		Currency:      payment.Currency,
+		Amount:        payment.Amount,
+		Status:        payment.Status,
+		PaymentMethod: payment.PaymentMethod,
+		MerchantName:  payment.MerchantName,
+		PaidAt:        payment.UpdatedAt,
+	}
+
+	go func() {
+		err = p.Notif.SendPaid(&resp)
+		for err != nil {
+			err = p.Notif.SendPaid(&resp)
+		}
+
+		log.Printf("[Success] Add invoice: '%v' to message broker", resp.InvoiceID)
+	}()
 
 	return c.JSON(200, payment)
 }

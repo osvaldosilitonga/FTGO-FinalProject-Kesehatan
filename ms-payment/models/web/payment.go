@@ -25,3 +25,22 @@ type InvoiceResponse struct {
 	PayerEmail  string    `json:"payer_email"`
 	Amount      int       `json:"amount"`
 }
+
+type PaidRequest struct {
+	Status        string `json:"status"`
+	PaymentMethod string `json:"payment_method"`
+	MerchantName  string `json:"merchant_name"`
+	Currency      string `json:"currency"`
+}
+
+type PaidNotification struct {
+	InvoiceID     string    `json:"invoice_id"`
+	OrderID       string    `json:"order_id"`
+	Email         string    `json:"email"`
+	Currency      string    `json:"currency"`
+	Amount        int       `json:"amount"`
+	Status        string    `json:"status"`
+	PaymentMethod string    `json:"payment_method"`
+	MerchantName  string    `json:"merchant_name"`
+	PaidAt        time.Time `json:"paid_at"`
+}

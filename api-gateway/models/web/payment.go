@@ -47,3 +47,9 @@ type PaymentList struct {
 	Message string `json:"-"`
 	Payment []Payments
 }
+
+type PaidRequest struct {
+	Status        string `json:"status"`
+	PaymentMethod string `json:"payment_method"`
+	MerchantName  string `json:"merchant_name"`
+}
