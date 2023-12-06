@@ -1094,42 +1094,44 @@ END CONFIG STYLES
                                                     <tr>
                                                       <td>Invoice Id</td>
                                                       <td>
-                                                        : invoiceidexample
+                                                        : {{ .InvoiceID }}
                                                       </td>
                                                     </tr>
                                                     <tr>
                                                       <td>Order Id</td>
-                                                      <td>: orderidexample</td>
+                                                      <td>: {{ .OrderID }}</td>
                                                     </tr>
                                                     <tr>
                                                       <td>Email</td>
-                                                      <td>: emailexample</td>
+                                                      <td>: {{ .Email }}</td>
                                                     </tr>
                                                     <tr>
                                                       <td>Currency</td>
-                                                      <td>: IDR</td>
+                                                      <td>: {{ .Currency }}</td>
                                                     </tr>
                                                     <tr>
                                                       <td>Amount</td>
-                                                      <td>: 123456</td>
+                                                      <td>: {{ .Amount }}</td>
                                                     </tr>
                                                     <tr>
                                                       <td>Status</td>
-                                                      <td>: SUCCESS</td>
+                                                      <td>: {{ .Status }}</td>
                                                     </tr>
                                                     <tr>
                                                       <td>Payment Method</td>
-                                                      <td>: Bank Transfer</td>
+                                                      <td>
+                                                        : {{ .PaymentMethod }}
+                                                      </td>
                                                     </tr>
                                                     <tr>
                                                       <td>Merchant Name</td>
-                                                      <td>: Mandiri</td>
+                                                      <td>
+                                                        : {{ .MerchantName }}
+                                                      </td>
                                                     </tr>
                                                     <tr>
                                                       <td>Paid at</td>
-                                                      <td>
-                                                        : 06 December 2023
-                                                      </td>
+                                                      <td>: {{ .PaidAt }}</td>
                                                     </tr>
                                                   </tbody>
                                                 </table>

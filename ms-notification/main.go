@@ -4,6 +4,7 @@ import (
 	"log"
 	"notification/configs"
 	"notification/services"
+	"sync"
 
 	"github.com/joho/godotenv"
 )
@@ -21,17 +22,30 @@ func main() {
 		}
 	}()
 
-	conn, rch := configs.InitRabbit()
-	defer func() {
-		conn.Close()
-		rch.Close()
-	}()
+	_, rch := configs.InitRabbit()
 
 	log.Println("RabbitMQ Connected")
 
 	paymentService := services.NewPaymentService(rch)
 	userService := services.NewUserService(rch)
 
-	paymentService.InvoiceNotification()
-	userService.UserNotification()
+	var wg sync.WaitGroup
+
+	go func() {
+		wg.Add(1)
+		paymentService.InvoiceNotification()
+		wg.Done()
+	}()
+	go func() {
+		wg.Add(1)
+		paymentService.PaidNotification()
+		wg.Done()
+	}()
+	go func() {
+		wg.Add(1)
+		userService.UserNotification()
+		wg.Done()
+	}()
+
+	wg.Wait()
 }

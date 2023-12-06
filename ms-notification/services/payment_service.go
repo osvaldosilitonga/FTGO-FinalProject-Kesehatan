@@ -10,6 +10,7 @@ import (
 
 type PaymentService interface {
 	InvoiceNotification()
+	PaidNotification()
 }
 
 type PaymentServiceImpl struct {
@@ -56,6 +57,47 @@ func (p *PaymentServiceImpl) InvoiceNotification() {
 			for err != nil {
 				log.Println("Handlers Invoice Error: ", err)
 				err = handlers.InvoiceNotification(data)
+			}
+		}
+	}()
+
+	<-forever
+}
+
+func (p *PaymentServiceImpl) PaidNotification() {
+	defer func() {
+		if err := recover(); err != nil {
+			log.Fatalf("Panic Recover, Error: %v", err)
+		}
+	}()
+
+	q := configs.InitQueue(p.RabbitCH, "paid")
+
+	msgs, err := p.RabbitCH.Consume(
+		q.Name, // queue
+		"",     // consumer
+		true,   // auto-ack
+		false,  // exclusive
+		false,  // no-local
+		false,  // no-wait
+		nil,    // args
+	)
+
+	if err != nil {
+		panic(err)
+	}
+
+	var forever chan struct{}
+
+	go func() {
+		var data []byte
+
+		for d := range msgs {
+			data = d.Body
+			err := handlers.PaidNotification(data)
+			for err != nil {
+				log.Println("Handlers Paid Error: ", err)
+				err = handlers.PaidNotification(data)
 			}
 		}
 	}()
