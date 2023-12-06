@@ -8,12 +8,17 @@ import (
 	"payment/repository"
 	"payment/services"
 	"payment/utils"
+	"strconv"
+	"strings"
 
 	"github.com/labstack/echo/v4"
 )
 
 type Payment interface {
 	Create(ctx echo.Context) error
+	FindByInvoiceID(ctx echo.Context) error
+	FindByOrderID(ctx echo.Context) error
+	FindByUserID(ctx echo.Context) error
 }
 
 type PaymentImpl struct {
@@ -73,4 +78,59 @@ func (p *PaymentImpl) Create(c echo.Context) error {
 	}()
 
 	return c.JSON(201, resp)
+}
+
+func (p *PaymentImpl) FindByInvoiceID(c echo.Context) error {
+	invoiceId := c.Param("id")
+
+	payment, err := p.Repo.FindByInvoiceID(invoiceId)
+	if err != nil {
+		return utils.ErrorMessage(c, &utils.ApiNotFound, err.Error())
+	}
+
+	return c.JSON(200, payment)
+}
+
+func (p *PaymentImpl) FindByOrderID(c echo.Context) error {
+	orderId := c.Param("id")
+
+	payment, err := p.Repo.FindByOrderID(orderId)
+	if err != nil {
+		return utils.ErrorMessage(c, &utils.ApiNotFound, err.Error())
+	}
+
+	return c.JSON(200, payment)
+}
+
+func (p *PaymentImpl) FindByUserID(c echo.Context) error {
+	orderId := c.Param("id")
+	id, err := strconv.Atoi(orderId)
+	if err != nil {
+		return utils.ErrorMessage(c, &utils.ApiBadRequest, err.Error())
+	}
+
+	status := strings.ToUpper(c.QueryParam("status"))
+	if len(status) == 0 {
+		status = "ALL"
+	}
+
+	page := c.QueryParam("page")
+	if page == "" {
+		page = "1"
+	}
+	pageInt, err := strconv.Atoi(page)
+	if err != nil {
+		return utils.ErrorMessage(c, &utils.ApiBadRequest, err)
+	}
+
+	payment, err := p.Repo.FindByUserID(id, pageInt, status)
+	if err != nil {
+		return utils.ErrorMessage(c, &utils.ApiNotFound, err.Error())
+	}
+
+	if len(*payment) == 0 {
+		return utils.ErrorMessage(c, &utils.ApiNotFound, "Data not found")
+	}
+
+	return c.JSON(200, payment)
 }
