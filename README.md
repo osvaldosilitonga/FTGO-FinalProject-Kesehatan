@@ -49,6 +49,9 @@ WellnessLink is a modern platform designed to streamline access to medications a
 - **POST /api/v1/user/register**: Register a new user.
     - **Description**: Register a new user.
     - **Example Request**: **`POST /api/v1/user/register`**
+- **POST /api/v1/user/admin**: Register a new user.
+    - **Description**: Register a new admin.
+    - **Example Request**: **`POST /api/v1/user/admin`**
 - **PUT /api/v1/user/profile/:id**: Update user profile by ID.
     - **Description**: Update user profile based on the provided ID.
     - **Example Request**: **`PUT /api/v1/user/profile/1`**
@@ -62,12 +65,33 @@ WellnessLink is a modern platform designed to streamline access to medications a
     - **Description**: Create a product order.
     - **Auth**: Required (User).
     - **Example Request**: **`POST /api/v1/order`**
+- **POST /api/v1/order/cancel/:id**: Cancel a product order.
+    - **Description**: Cancel a specific order.
+    - **Auth**: Required (User).
+    - **Example Request**: **`/api/v1/order/cancel/1`**
+- **GET /api/v1/order/:id**: Get order by ID.
+    - **Description**: Retrieve details of a specific order.
+    - **Example Request**: **`GET /api/v1/order/1`**
+- **GET /api/v1/order/admin**: Get list of order.
+    - **Description**: Get a list of all orders.
+    - **Auth**: Required (Admin).
+    - **Example Request**: **`GET /api/v1/order/admin`**
+- **PUT /api/v1/order/admin/confirm/:id**: Confirm an order by ID.
+    - **Description**: Confirm an order by ID.
+    - **Auth**: Required (Admin).
+    - **Example Request**: **`PUT /api/v1/order/admin/confirm/1`**
 
 ### Payment
 
-- **POST /api/v1/payment**: Make a payment.
-    - **Description**: Make a payment.
-    - **Example Request**: **`POST /api/v1/payment`**
+- **GET /api/v1/payment/:id**: Get payment details by ID.
+    - **Description**: Find payment details by invoice ID.
+    - **Example Request**: **`GET /api/v1/payment/:1`**
+- **GET /api/v1/payment/order/:id**: Find payment by order ID.
+    - **Description**: Find payment details by order ID.
+    - **Example Request**: **`GET /api/v1/payment/order/1`**
+- **GET /api/v1/payment/user/:id**: Find payment by user ID.
+    - **Description**: Find payment details by user ID.
+    - **Example Request**: **`GET /api/v1/payment/user/1`**
 
 ## Notification Service
 
