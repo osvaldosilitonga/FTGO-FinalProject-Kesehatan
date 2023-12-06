@@ -1482,8 +1482,6 @@ var SwaggerInfo = &swag.Spec{
 	Description:      "The Health and Pharmaceutical Sales API provides an integrated solution for health and drug sales business systems.",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
-	LeftDelim:        "{{",
-	RightDelim:       "}}",
 }
 
 func init() {
