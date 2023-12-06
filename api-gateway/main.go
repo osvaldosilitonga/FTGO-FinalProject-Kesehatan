@@ -11,6 +11,8 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 
+	_ "gateway/docs"
+
 	echoSwagger "github.com/swaggo/echo-swagger"
 )
 

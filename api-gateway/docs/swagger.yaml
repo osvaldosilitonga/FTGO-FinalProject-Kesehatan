@@ -121,6 +121,55 @@ definitions:
       status:
         type: string
     type: object
+  web.SwPaymentByUserID:
+    properties:
+      code:
+        type: integer
+      data:
+        items:
+          $ref: '#/definitions/web.SwPaymentInvoiceData'
+        type: array
+      status:
+        type: string
+    type: object
+  web.SwPaymentInvoice:
+    properties:
+      code:
+        type: integer
+      data:
+        $ref: '#/definitions/web.SwPaymentInvoiceData'
+      status:
+        type: string
+    type: object
+  web.SwPaymentInvoiceData:
+    properties:
+      amount:
+        type: integer
+      created_at:
+        type: string
+      currency:
+        type: string
+      description:
+        type: string
+      email:
+        type: string
+      id:
+        type: string
+      invoice_id:
+        type: string
+      merchant_name:
+        type: string
+      order_id:
+        type: string
+      payment_method:
+        type: string
+      status:
+        type: string
+      updated_at:
+        type: string
+      user_id:
+        type: integer
+    type: object
   web.SwProduct:
     properties:
       category:
@@ -612,6 +661,140 @@ paths:
       summary: Cancel order (Customer Only)
       tags:
       - Order
+  /payment/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get Payment by Invoice ID
+      parameters:
+      - description: JWT Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Invoice ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/web.SwPaymentInvoice'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/web.ErrWebResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/web.ErrWebResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/web.ErrWebResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/web.ErrWebResponse'
+      summary: Get Payment by Invoice ID (Owner, Admin)
+      tags:
+      - Payment
+  /payment/order/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get Payment by Order ID
+      parameters:
+      - description: JWT Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Order ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/web.SwPaymentInvoice'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/web.ErrWebResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/web.ErrWebResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/web.ErrWebResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/web.ErrWebResponse'
+      summary: Get Payment by Order ID (Owner, Admin)
+      tags:
+      - Payment
+  /payment/user/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get Payment by User ID
+      parameters:
+      - description: JWT Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Owner ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Page
+        in: query
+        name: page
+        type: integer
+      - description: status
+        in: query
+        name: status
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/web.SwPaymentByUserID'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/web.ErrWebResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/web.ErrWebResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/web.ErrWebResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/web.ErrWebResponse'
+      summary: Get Payment by User ID (Owner, Admin)
+      tags:
+      - Payment
   /products:
     get:
       consumes:

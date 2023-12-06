@@ -202,3 +202,31 @@ type SwProductCreateData struct {
 	CreatedAt   string `json:"createdAt"`
 	UpdatedAt   string `json:"updatedAt"`
 }
+
+// ------------------ PAYMENT --------------------------
+type SwPaymentInvoice struct {
+	Code   int                  `json:"code"`
+	Status string               `json:"status"`
+	Data   SwPaymentInvoiceData `json:"data"`
+}
+type SwPaymentInvoiceData struct {
+	Id            string `json:"id"`
+	InvoiceId     string `json:"invoice_id"`
+	OrderId       string `json:"order_id"`
+	UserID        int    `json:"user_id"`
+	Email         string `json:"email"`
+	Amount        int    `json:"amount"`
+	Description   string `json:"description"`
+	Status        string `json:"status"`
+	PaymentMethod string `json:"payment_method"`
+	MerchantName  string `json:"merchant_name"`
+	Currency      string `json:"currency"`
+	CreatedAt     string `json:"created_at"`
+	UpdatedAt     string `json:"updated_at"`
+}
+
+type SwPaymentByUserID struct {
+	Code   int                    `json:"code"`
+	Status string                 `json:"status"`
+	Data   []SwPaymentInvoiceData `json:"data"`
+}
