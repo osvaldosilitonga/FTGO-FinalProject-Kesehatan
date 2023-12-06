@@ -182,6 +182,16 @@ func (o *OrderControllerImpl) CancelOrder(c echo.Context) error {
 		return utils.GrpcError(c, err)
 	}
 
+	// Update payment status
+	go func() {
+		err = o.PaymentService.CancelPayment(orderId)
+		for err != nil {
+			fmt.Println("Payment service error, retrying...")
+
+			err = o.PaymentService.CancelPayment(orderId)
+		}
+	}()
+
 	return utils.SuccessMessage(c, &utils.ApiOk, res)
 }
 

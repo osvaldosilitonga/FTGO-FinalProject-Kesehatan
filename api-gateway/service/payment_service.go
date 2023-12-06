@@ -16,6 +16,7 @@ type Payment interface {
 	FindByInvoiceID(invoiceID string) (*web.Payments, int, error)
 	FIndByOrderID(orderID string) (*web.Payments, int, error)
 	FindByUserID(userID, queryPage, queryStatus string) (*[]web.Payments, int, error)
+	CancelPayment(orderId string) error
 }
 
 type PaymentImpl struct {
@@ -167,4 +168,28 @@ func (p *PaymentImpl) FindByUserID(userID, queryPage, queryStatus string) (*[]we
 	}
 
 	return &payment, resp.StatusCode, nil
+}
+
+func (p *PaymentImpl) CancelPayment(orderId string) error {
+	baseUrl := os.Getenv("PAYMENT_SERVICE_BASE_URL")
+
+	req, err := http.NewRequest("PUT", fmt.Sprintf("%s/payment/cancel/%s", baseUrl, orderId), nil)
+	if err != nil {
+		return err
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+
+	client := http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != 200 {
+		return err
+	}
+
+	return nil
 }
