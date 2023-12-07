@@ -8,6 +8,8 @@ import (
 	"product/configs"
 	"product/service"
 
+	// "product/service"
+
 	pb "product/internal/product"
 
 	"github.com/joho/godotenv"
@@ -33,7 +35,13 @@ func main() {
 
 	productService := service.NewProductService(dbCollection, dbClient)
 
-	var opts []grpc.ServerOption
+	// var opts []grpc.ServerOption
+	opts := []grpc.ServerOption{
+		// grpc.ChainUnaryInterceptor(
+		// 	logging.UnaryServerInterceptor(middlewares.NewInterceptorLogger()),
+		// 	grpc_auth.UnaryServerInterceptor(middlewares.JWTAuth),
+		// ),
+	}
 	grpcServer := grpc.NewServer(opts...)
 	pb.RegisterProductServiceServer(grpcServer, productService)
 

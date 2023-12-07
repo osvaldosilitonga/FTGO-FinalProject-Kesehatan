@@ -1,12 +1,17 @@
 package controllers
 
 import (
+	// "context"
 	pb "gateway/internal/product"
+	// "gateway/middlewares"
 	"gateway/models/web"
 	"gateway/service"
 	"gateway/utils"
 
+	// "time"
+
 	"github.com/labstack/echo/v4"
+	// grpcMetadata "google.golang.org/grpc/metadata"
 )
 
 type Product interface {
@@ -72,6 +77,16 @@ func (p *ProductImpl) CreateProduct(c echo.Context) error {
 		Stock:       req.Stock,
 	}
 
+	// // GRPC Auth
+	// ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	// defer cancel()
+
+	// token, err := middlewares.SignJwtForGrpc()
+	// if err != nil {
+	// 	return utils.ErrorMessage(c, &utils.ApiInternalServer, err)
+	// }
+
+	// ctxWithAuth := grpcMetadata.AppendToOutgoingContext(ctx, "authorization", "Bearer "+token)
 	res, err := p.ProductService.CreateProduct(c.Request().Context(), product)
 	if err != nil {
 		return utils.GrpcError(c, err)
