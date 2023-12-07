@@ -6,12 +6,15 @@ import (
 	"net"
 	"os"
 	"product/configs"
+	"product/middlewares"
 	"product/service"
 
 	// "product/service"
 
 	pb "product/internal/product"
 
+	grpc_auth "github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/auth"
+	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/logging"
 	"github.com/joho/godotenv"
 	"google.golang.org/grpc"
 )
@@ -37,10 +40,10 @@ func main() {
 
 	// var opts []grpc.ServerOption
 	opts := []grpc.ServerOption{
-		// grpc.ChainUnaryInterceptor(
-		// 	logging.UnaryServerInterceptor(middlewares.NewInterceptorLogger()),
-		// 	grpc_auth.UnaryServerInterceptor(middlewares.JWTAuth),
-		// ),
+		grpc.ChainUnaryInterceptor(
+			logging.UnaryServerInterceptor(middlewares.NewInterceptorLogger()),
+			grpc_auth.UnaryServerInterceptor(middlewares.JWTAuth),
+		),
 	}
 	grpcServer := grpc.NewServer(opts...)
 	pb.RegisterProductServiceServer(grpcServer, productService)
