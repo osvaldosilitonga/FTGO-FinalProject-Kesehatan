@@ -8,10 +8,6 @@ import (
 )
 
 func InitRabbit() (*amqp.Connection, *amqp.Channel) {
-	// username := os.Getenv("RABBIT_USERNAME")
-	// password := os.Getenv("RABBIT_PASSWORD")
-	// host := os.Getenv("RABBIT_HOST")
-	// port := os.Getenv("RABBIT_PORT")
 	rabbitUrl := os.Getenv("RABBIT_URL")
 
 	conn, err := amqp.Dial(rabbitUrl)
@@ -27,7 +23,7 @@ func InitRabbit() (*amqp.Connection, *amqp.Channel) {
 	return conn, ch
 }
 
-func InitQueue(ch *amqp.Channel, queueName string) amqp.Queue {
+func InitQueue(ch *amqp.Channel, queueName string) *amqp.Queue {
 	q, err := ch.QueueDeclare(
 		queueName, // name
 		false,     // durable
@@ -40,5 +36,5 @@ func InitQueue(ch *amqp.Channel, queueName string) amqp.Queue {
 		log.Fatal(err)
 	}
 
-	return q
+	return &q
 }

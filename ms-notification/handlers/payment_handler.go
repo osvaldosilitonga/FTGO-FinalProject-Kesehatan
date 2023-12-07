@@ -16,21 +16,22 @@ import (
 func InvoiceNotification(msg []byte) error {
 	defer func() {
 		if err := recover(); err != nil {
-			log.Fatalf("Panic Recover, Error: %v", err)
+			log.Fatalf("Panic Recover From handlers invoice notification, Error: %v", err)
 		}
 	}()
 
 	// get data
-	data := dto.Invoice{}
+	var data dto.Invoice
 	if err := json.Unmarshal(msg, &data); err != nil {
+		log.Fatalf("error unmarshal: %v", err)
 		return err
 	}
 
 	var body bytes.Buffer
 	t, err := template.ParseFiles("./template/invoice.html")
 	t.Execute(&body, data)
-
 	if err != nil {
+		log.Fatalf("error parse template: %v", err)
 		return err
 	}
 
@@ -46,8 +47,8 @@ func InvoiceNotification(msg []byte) error {
 
 	d := gomail.NewDialer("smtp.gmail.com", 587, email, password)
 	d.TLSConfig = &tls.Config{InsecureSkipVerify: true}
-
 	if err := d.DialAndSend(m); err != nil {
+		log.Fatalf("error send email: %v", err)
 		return err
 	}
 
@@ -57,7 +58,7 @@ func InvoiceNotification(msg []byte) error {
 func PaidNotification(msg []byte) error {
 	defer func() {
 		if err := recover(); err != nil {
-			log.Fatalf("Panic Recover, Error: %v", err)
+			log.Fatalf("Panic Recover From handlers paid notification, Error: %v", err)
 		}
 	}()
 

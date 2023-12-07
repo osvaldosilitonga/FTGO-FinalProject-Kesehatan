@@ -53,6 +53,9 @@ func (n *NotificationServiceImpl) SendInvoice(data *web.InvoiceResponse) error {
 }
 
 func (n *NotificationServiceImpl) SendPaid(data *web.PaidNotification) error {
+	localDate := data.PaidAt.Local()
+	data.PaidAt = localDate
+
 	q := configs.InitQueue(n.RabbitCH, "paid")
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)

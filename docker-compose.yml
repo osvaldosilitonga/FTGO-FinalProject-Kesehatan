@@ -1,0 +1,65 @@
+version: "3.8"
+
+services:
+  redis:
+    image: redis:7.2-alpine
+    restart: always
+    networks:
+      - default
+    ports:
+      - "6379:6379"
+
+  api-gateway:
+    build:
+      context: ./api-gateway
+    ports:
+      - "8080:8080"
+    networks:
+      - default
+    depends_on:
+      - ms-user
+      - ms-product
+      - ms-order
+      - ms-payment
+      - ms-notification
+      - redis
+
+  ms-order:
+    build:
+      context: ./ms-order
+    ports:
+      - "50052:50052"
+    networks:
+      - default
+
+  ms-payment:
+    build:
+      context: ./ms-payment
+    ports:
+      - "8084:8084"
+    networks:
+      - default
+
+  ms-product:
+    build:
+      context: ./ms-product
+    ports:
+      - "50051:50051"
+    networks:
+      - default
+
+  ms-user:
+    build:
+      context: ./ms-user
+    ports:
+      - "8082:8082"
+    networks:
+      - default
+
+  ms-notification:
+    build:
+      context: ./ms-notification
+    # ports:
+    #   - "8082:8082"
+    networks:
+      - default

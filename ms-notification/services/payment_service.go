@@ -24,12 +24,6 @@ func NewPaymentService(rc *amqp.Channel) PaymentService {
 }
 
 func (p *PaymentServiceImpl) InvoiceNotification() {
-	defer func() {
-		if err := recover(); err != nil {
-			log.Fatalf("Panic Recover, Error: %v", err)
-		}
-	}()
-
 	q := configs.InitQueue(p.RabbitCH, "invoice")
 
 	msgs, err := p.RabbitCH.Consume(
@@ -43,34 +37,31 @@ func (p *PaymentServiceImpl) InvoiceNotification() {
 	)
 
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 
-	var forever chan struct{}
+	// var forever chan struct{}
 
-	go func() {
-		var data []byte
+	// go func() {
+	// 	var data []byte
 
-		for d := range msgs {
-			data = d.Body
-			err := handlers.InvoiceNotification(data)
-			for err != nil {
-				log.Println("Handlers Invoice Error: ", err)
-				err = handlers.InvoiceNotification(data)
-			}
+	for d := range msgs {
+		log.Printf("\033[36mNEW MESSAGE (INVOICE):\033[0m %s", d.Body)
+
+		data := d.Body
+		err := handlers.InvoiceNotification(data)
+		for err != nil {
+			log.Println("Handlers Invoice Error: ", err)
+			err = handlers.InvoiceNotification(data)
 		}
-	}()
+	}
 
-	<-forever
+	// }()
+
+	// <-forever
 }
 
 func (p *PaymentServiceImpl) PaidNotification() {
-	defer func() {
-		if err := recover(); err != nil {
-			log.Fatalf("Panic Recover, Error: %v", err)
-		}
-	}()
-
 	q := configs.InitQueue(p.RabbitCH, "paid")
 
 	msgs, err := p.RabbitCH.Consume(
@@ -84,23 +75,25 @@ func (p *PaymentServiceImpl) PaidNotification() {
 	)
 
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 
-	var forever chan struct{}
+	// var forever chan struct{}
 
-	go func() {
-		var data []byte
+	// go func() {
+	// 	var data []byte
 
-		for d := range msgs {
-			data = d.Body
-			err := handlers.PaidNotification(data)
-			for err != nil {
-				log.Println("Handlers Paid Error: ", err)
-				err = handlers.PaidNotification(data)
-			}
+	for d := range msgs {
+		log.Printf("\033[36mNEW MESSAGE (PAID):\033[0m %s", d.Body)
+
+		data := d.Body
+		err := handlers.PaidNotification(data)
+		for err != nil {
+			log.Println("Handlers Paid Error: ", err)
+			err = handlers.PaidNotification(data)
 		}
-	}()
+	}
+	// }()
 
-	<-forever
+	// <-forever
 }

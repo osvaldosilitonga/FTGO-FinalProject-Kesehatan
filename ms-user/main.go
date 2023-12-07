@@ -22,12 +22,6 @@ func main() {
 
 	e := echo.New()
 
-	// conn, rch := config.InitRabbit()
-	// defer func() {
-	// 	conn.Close()
-	// 	rch.Close()
-	// }()
-
 	// Middlewares
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())

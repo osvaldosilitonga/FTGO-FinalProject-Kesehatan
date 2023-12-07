@@ -24,11 +24,12 @@ func init() {
 func main() {
 	e := echo.New()
 
-	conn, rch := configs.InitRabbit()
-	defer func() {
-		conn.Close()
-		rch.Close()
-	}()
+	_, rch := configs.InitRabbit()
+
+	// defer func() {
+	// 	conn.Close()
+	// 	rch.Close()
+	// }()
 
 	e.Use(middleware.Recover())
 	e.Use(middleware.RequestLoggerWithConfig(middlewares.LogrusConfig()))

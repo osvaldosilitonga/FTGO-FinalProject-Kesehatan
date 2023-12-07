@@ -9,8 +9,6 @@ import (
 
 func RegisterRoutes(e *echo.Echo) {
 
-	// UserNotificationService := services.NewUserNotificationService(rch)
-
 	userHandler := handler.NewUserHandler()
 
 	e.POST("/register", userHandler.RegisterUser)
