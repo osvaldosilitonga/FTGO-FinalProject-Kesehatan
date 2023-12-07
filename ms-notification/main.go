@@ -31,21 +31,17 @@ func main() {
 
 	var wg sync.WaitGroup
 
-	go func() {
-		wg.Add(1)
-		paymentService.InvoiceNotification()
-		wg.Done()
-	}()
-	go func() {
-		wg.Add(1)
-		paymentService.PaidNotification()
-		wg.Done()
-	}()
-	go func() {
-		wg.Add(1)
-		userService.UserNotification()
-		wg.Done()
-	}()
+	wg.Add(1)
+	go paymentService.InvoiceNotification()
+	defer wg.Done()
+
+	wg.Add(1)
+	go paymentService.PaidNotification()
+	defer wg.Done()
+
+	wg.Add(1)
+	go userService.UserNotification()
+	defer wg.Done()
 
 	wg.Wait()
 }
