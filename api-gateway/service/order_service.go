@@ -3,10 +3,13 @@ package service
 import (
 	"context"
 	"fmt"
+	"time"
 
 	pb "gateway/internal/order"
+	"gateway/middlewares"
 
 	"google.golang.org/grpc"
+	grpcMetadata "google.golang.org/grpc/metadata"
 )
 
 type Order interface {
@@ -28,9 +31,22 @@ func NewOrderService(conn *grpc.ClientConn) Order {
 }
 
 func (o *OrderImpl) CreateOrderProduct(ctx context.Context, req *pb.CreateOrderProductRequest) (*pb.Order, error) {
+	// GRPC Auth
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+
+	token, err := middlewares.SignJwtForGrpc()
+	if err != nil {
+		return nil, err
+	}
+
+	ctxWithAuth := grpcMetadata.AppendToOutgoingContext(ctx, "authorization", "Bearer "+token)
+
 	orderClient := pb.NewOrderServiceClient(o.Conn)
 
-	order, err := orderClient.CreateOrderProduct(ctx, req)
+	order, err := orderClient.CreateOrderProduct(ctxWithAuth, req)
+
+	// order, err := orderClient.CreateOrderProduct(ctx, req)
 	if err != nil {
 		fmt.Printf("----> Error from create order service, err: %v\n", err)
 		return nil, err
@@ -40,9 +56,21 @@ func (o *OrderImpl) CreateOrderProduct(ctx context.Context, req *pb.CreateOrderP
 }
 
 func (o *OrderImpl) FindByOrderId(ctx context.Context, req *pb.FindByOrderIdRequest) (*pb.Order, error) {
+	// GRPC Auth
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+
+	token, err := middlewares.SignJwtForGrpc()
+	if err != nil {
+		return nil, err
+	}
+
+	ctxWithAuth := grpcMetadata.AppendToOutgoingContext(ctx, "authorization", "Bearer "+token)
+
 	orderClient := pb.NewOrderServiceClient(o.Conn)
 
-	order, err := orderClient.FindByOrderId(ctx, req)
+	order, err := orderClient.FindByOrderId(ctxWithAuth, req)
+	// order, err := orderClient.FindByOrderId(ctx, req)
 	if err != nil {
 		return nil, err
 	}
@@ -51,9 +79,21 @@ func (o *OrderImpl) FindByOrderId(ctx context.Context, req *pb.FindByOrderIdRequ
 }
 
 func (o *OrderImpl) UpdateStatus(ctx context.Context, req *pb.UpdateOrderStatusRequest) (*pb.Order, error) {
+	// GRPC Auth
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+
+	token, err := middlewares.SignJwtForGrpc()
+	if err != nil {
+		return nil, err
+	}
+
+	ctxWithAuth := grpcMetadata.AppendToOutgoingContext(ctx, "authorization", "Bearer "+token)
+
 	orderClient := pb.NewOrderServiceClient(o.Conn)
 
-	order, err := orderClient.UpdateStatus(ctx, req)
+	order, err := orderClient.UpdateStatus(ctxWithAuth, req)
+	// order, err := orderClient.UpdateStatus(ctx, req)
 	if err != nil {
 		return nil, err
 	}
@@ -62,9 +102,22 @@ func (o *OrderImpl) UpdateStatus(ctx context.Context, req *pb.UpdateOrderStatusR
 }
 
 func (o *OrderImpl) ListOrder(ctx context.Context, req *pb.ListOrderRequest) (*pb.ListOrderResponse, error) {
+	// GRPC Auth
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+
+	token, err := middlewares.SignJwtForGrpc()
+	if err != nil {
+		return nil, err
+	}
+
+	ctxWithAuth := grpcMetadata.AppendToOutgoingContext(ctx, "authorization", "Bearer "+token)
+
 	orderClient := pb.NewOrderServiceClient(o.Conn)
 
-	order, err := orderClient.ListOrder(ctx, req)
+	order, err := orderClient.ListOrder(ctxWithAuth, req)
+
+	// order, err := orderClient.ListOrder(ctx, req)
 	if err != nil {
 		return nil, err
 	}
@@ -73,9 +126,22 @@ func (o *OrderImpl) ListOrder(ctx context.Context, req *pb.ListOrderRequest) (*p
 }
 
 func (o *OrderImpl) FindByUserId(ctx context.Context, req *pb.FindByUserIdRequest) (*pb.ListOrderResponse, error) {
+	// GRPC Auth
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+
+	token, err := middlewares.SignJwtForGrpc()
+	if err != nil {
+		return nil, err
+	}
+
+	ctxWithAuth := grpcMetadata.AppendToOutgoingContext(ctx, "authorization", "Bearer "+token)
+
 	orderClient := pb.NewOrderServiceClient(o.Conn)
 
-	order, err := orderClient.FindByUserID(ctx, req)
+	order, err := orderClient.FindByUserID(ctxWithAuth, req)
+
+	// order, err := orderClient.FindByUserID(ctx, req)
 	if err != nil {
 		return nil, err
 	}

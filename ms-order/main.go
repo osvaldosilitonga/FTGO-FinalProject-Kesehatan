@@ -6,13 +6,14 @@ import (
 	"net"
 	"order/configs"
 	"order/controllers"
+	"order/middlewares"
 	"order/repository"
 	"os"
 
 	orderPB "order/internal/order"
 
-	// grpc_auth "github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/auth"
-
+	grpc_auth "github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/auth"
+	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/logging"
 	"github.com/joho/godotenv"
 	"google.golang.org/grpc"
 )
@@ -39,10 +40,10 @@ func main() {
 	orderController := controllers.NewOrderController(orderRepository)
 
 	opts := []grpc.ServerOption{
-		// grpc.ChainUnaryInterceptor(
-		// 	logging.UnaryServerInterceptor(middlewares.NewInterceptorLogger()),
-		// 	// grpc_auth.UnaryServerInterceptor(middlewares.JWTAuth),
-		// ),
+		grpc.ChainUnaryInterceptor(
+			logging.UnaryServerInterceptor(middlewares.NewInterceptorLogger()),
+			grpc_auth.UnaryServerInterceptor(middlewares.JWTAuth),
+		),
 	}
 	grpcServer := grpc.NewServer(opts...)
 	orderPB.RegisterOrderServiceServer(grpcServer, orderController)
