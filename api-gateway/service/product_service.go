@@ -37,20 +37,8 @@ func NewProductService(conn *grpc.ClientConn) Product {
 }
 
 func (p *ProductImpl) ListProduct(ctx context.Context) (*pb.ListProductResponse, error) {
-	// // GRPC Auth
-	// ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
-	// defer cancel()
-
-	// token, err := middlewares.SignJwtForGrpc()
-	// if err != nil {
-	// 	return nil, err
-	// }
-
-	// ctxWithAuth := grpcMetadata.AppendToOutgoingContext(ctx, "authorization", "Bearer "+token)
-
 	productClient := pb.NewProductServiceClient(p.Conn)
 
-	// list, err := productClient.ListProduct(ctxWithAuth, &pb.Empty{})
 	list, err := productClient.ListProduct(ctx, &pb.Empty{})
 	if err != nil {
 		log.Printf("Error from list product service, err: %v\n", err)

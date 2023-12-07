@@ -8,7 +8,6 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
-	amqp "github.com/rabbitmq/amqp091-go"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -19,10 +18,10 @@ type UserHandler interface {
 }
 
 type UserHandlerImpl struct {
-	RabbitCH *amqp.Channel
+	// RabbitCH *amqp.Channel
 }
 
-func NewUserHandler(rc *amqp.Channel) UserHandler {
+func NewUserHandler() UserHandler {
 	return &UserHandlerImpl{}
 }
 

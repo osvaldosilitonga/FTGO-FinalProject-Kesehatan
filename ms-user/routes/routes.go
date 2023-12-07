@@ -4,14 +4,14 @@ import (
 	"miniproject/handler"
 
 	"github.com/labstack/echo/v4"
-	amqp "github.com/rabbitmq/amqp091-go"
+	// amqp "github.com/rabbitmq/amqp091-go"
 )
 
-func RegisterRoutes(e *echo.Echo, rch *amqp.Channel) {
+func RegisterRoutes(e *echo.Echo) {
 
 	// UserNotificationService := services.NewUserNotificationService(rch)
 
-	userHandler := handler.NewUserHandler(rch)
+	userHandler := handler.NewUserHandler()
 
 	e.POST("/register", userHandler.RegisterUser)
 	e.POST("/register/admin", userHandler.RegisterAdmin)

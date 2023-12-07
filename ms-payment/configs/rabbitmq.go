@@ -1,7 +1,6 @@
 package configs
 
 import (
-	"fmt"
 	"log"
 	"os"
 
@@ -9,22 +8,17 @@ import (
 )
 
 func InitRabbit() (*amqp.Connection, *amqp.Channel) {
-	username := os.Getenv("RABBIT_USERNAME")
-	password := os.Getenv("RABBIT_PASSWORD")
-	host := os.Getenv("RABBIT_HOST	")
-	port := os.Getenv("RABBIT_PORT")
+	rabbitUrl := os.Getenv("RABBIT_URL")
 
-	conn, err := amqp.Dial(fmt.Sprintf("amqp://%s:%s@%s:%s/", username, password, host, port))
+	conn, err := amqp.Dial(rabbitUrl)
 	if err != nil {
 		log.Fatal(err)
 	}
-	// defer conn.Close()
 
 	ch, err := conn.Channel()
 	if err != nil {
 		log.Fatal(err)
 	}
-	// defer ch.Close()
 
 	return conn, ch
 }
