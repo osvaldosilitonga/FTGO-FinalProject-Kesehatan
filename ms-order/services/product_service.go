@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"os"
 	"time"
@@ -25,7 +26,9 @@ func CheckStock(ctx context.Context, req *pbProduct.CheckStockRequest) (*pbProdu
 
 	ctxWithAuth := grpcMetadata.AppendToOutgoingContext(ctx, "authorization", "Bearer "+token)
 
-	client := configs.ProductGrpc(os.Getenv("PRODUCT_GRPC_SERVER"))
+	pHost := os.Getenv("PRODUCT_GRPC_HOST")
+	pPort := os.Getenv("PRODUCT_GRPC_PORT")
+	client := configs.ProductGrpc(fmt.Sprintf("%s:%s", pHost, pPort))
 
 	productClient := pbProduct.NewProductServiceClient(client)
 

@@ -1,6 +1,7 @@
 package router
 
 import (
+	"fmt"
 	"gateway/configs"
 	"gateway/controllers"
 	"gateway/hooks"
@@ -12,8 +13,13 @@ import (
 )
 
 func Router(r *echo.Echo) {
-	productGrpc := configs.ProductGrpc(os.Getenv("PRODUCT_GRPC_SERVER"))
-	orderGrpc := configs.ProductGrpc(os.Getenv("ORDER_GRPC_SERVER"))
+	pHost := os.Getenv("PRODUCT_GRPC_HOST")
+	pPort := os.Getenv("PRODUCT_GRPC_PORT")
+	productGrpc := configs.ProductGrpc(fmt.Sprintf("%s:%s", pHost, pPort))
+
+	oHost := os.Getenv("ORDER_GRPC_HOST")
+	oPort := os.Getenv("ORDER_GRPC_PORT")
+	orderGrpc := configs.ProductGrpc(fmt.Sprintf("%s:%s", oHost, oPort))
 
 	redisClient := configs.InitRedis()
 
